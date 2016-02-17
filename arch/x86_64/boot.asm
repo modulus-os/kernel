@@ -1,4 +1,5 @@
 global start
+extern lm_start
 
 section .boot
 bits 32
@@ -16,7 +17,15 @@ start:
 	call paging_setup_tables
 	call paging_enable
 
-	mov dword [0xb8000], 0x2f4b2f4f
+	lgdt[gdt.pointer]
+
+	mov ax, 16
+	mov ss, ax ;stack
+	mov ds, ax ;data
+	mov es, ax ;extra
+
+	;Long jmp to 64 bit code!
+	jmp gdt.code:lm_start
 
 	hlt
 

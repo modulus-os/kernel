@@ -1,30 +1,30 @@
 bd = build
 bdc = mkdir -p $(bd)
 
-arch = x86_64
+arch ?= x86_64
 asrc = arch/$(arch)
+
+kernel = modulon64
+
+ld = $(asrc)/linker.ld
+asmo := $(wildcard $(bd)/*.o)
+
 
 run: modulon.iso
 	qemu-system-x86_64 -cdrom modulon.iso
 
-modulon-$(arch): $(bd)/mb_header.o $(bd)/boot.o
+modulon64: $(asmo)
 	$(bdc)
-	ld -n -T $(asrc)/linker.ld -o modulon-$(arch) $(bd)/mb_header.o $(bd)/boot.o
+	nasm $(asrc)/boot.asm -o $(bd)/boot.o -f elf64
+	nasm $(asrc)/mb_header.asm -o $(bd)/mb_header.o -f elf64
+	nasm $(asrc)/lm_start.asm -o $(bd)/lm_start.o -f elf64
+	ld -n -T $(asrc)/linker.ld -o modulon64 $(bd)/boot.o $(bd)/mb_header.o $(bd)/lm_start.o
 
-$(bd)/mb_header.o: $(asrc)/mb_header.asm
-	$(bdc)
-	nasm -f elf64 $(asrc)/mb_header.asm -o $(bd)/mb_header.o
-
-$(bd)/boot.o: $(asrc)/boot.asm
-	$(bdc)
-	nasm -f elf64 $(asrc)/boot.asm -o $(bd)/boot.o
-
-modulon.iso: modulon-$(arch)
-	$(bdc)
+modulon.iso: modulon64
 	mkdir -p $(bd)/grub/boot/grub
 	cp $(asrc)/grub.cfg $(bd)/grub/boot/grub
 	cp $(asrc)/efi.img $(bd)/grub
-	cp modulon-$(arch) $(bd)/grub/boot
+	cp modulon64 $(bd)/grub/boot
 	grub-mkrescue -o modulon.iso $(bd)/grub
 
 clean: $(bd)

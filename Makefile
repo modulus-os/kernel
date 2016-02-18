@@ -1,31 +1,38 @@
-bd = build
-bdc = mkdir -p $(bd)
+BD = build
 
-arch ?= x86_64
-asrc = arch/$(arch)
+ARCH = x86_64
+ASRC = src/arch/$(ARCH)
 
-kernel = modulon64
+KERNEL = modulon64
 
-ld = $(asrc)/linker.ld
-asmo := $(wildcard $(bd)/*.o)
+LD = ld -n -gc-sections -T $(ASRC)/linker.ld
+ASM = nasm -f elf64
 
+ASM_SRC = $(wildcard $(ASRC)/*.asm)
 
-run: modulon.iso
-	qemu-system-x86_64 -cdrom modulon.iso -curses
+RUSTO = target/debug/libmodulon.a
+ASMO = $(patsubst $(ASRC)/%.asm, $(BD)/arch/$(ARCH)/%.asm.o, $(ASM_SRC))
 
-modulon64: $(asmo)
-	$(bdc)
-	nasm $(asrc)/boot.asm -o $(bd)/boot.o -f elf64
-	nasm $(asrc)/mb_header.asm -o $(bd)/mb_header.o -f elf64
-	nasm $(asrc)/lm_start.asm -o $(bd)/lm_start.o -f elf64
-	ld -n -T $(asrc)/linker.ld -o modulon64 $(bd)/boot.o $(bd)/mb_header.o $(bd)/lm_start.o
+run: $(KERNEL).iso
+	qemu-system-x86_64 -cdrom modulon.iso
 
-modulon.iso: modulon64
-	mkdir -p $(bd)/grub/boot/grub
-	cp $(asrc)/grub.cfg $(bd)/grub/boot/grub
-	cp $(asrc)/efi.img $(bd)/grub
-	cp modulon64 $(bd)/grub/boot
-	grub-mkrescue -o modulon.iso $(bd)/grub
+$(KERNEL): $(ASMO) cargo $(RUSTO)
+	@mkdir -p $(BD)/arch/$(ARCH)
+	$(LD) -o $(KERNEL) $(ASMO) $(RUSTO)
 
-clean: $(bd)
-	rm -rf $(bd)
+$(BD)/arch/$(ARCH)/%.asm.o: $(ASRC)/%.asm
+	$(ASM) $< -o $@
+
+cargo:
+	@cargo rustc  -- -Z no-landing-pads -C no-redzone
+
+$(KERNEL).iso: $(KERNEL) $(ASRC)/grub.cfg $(ASRC)/efi.img
+	@mkdir -p $(BD)/grub/boot/grub
+	@cp $(ASRC)/grub.cfg $(BD)/grub/boot/grub
+	@cp $(ASRC)/efi.img $(BD)/grub
+	@cp modulon64 $(BD)/grub/boot
+	@echo
+	grub-mkrescue -o modulon.iso $(BD)/grub
+
+clean: $(BD)
+	rm -rf $(BD)

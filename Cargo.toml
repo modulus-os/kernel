@@ -1,7 +1,10 @@
 [package]
 name = "modulon"
 version = "0.1.0"
-authors = "icematrix"
+authors = ["icematrix"]
 
 [lib]
 crate-type = ["staticlib"]
+
+[dependencies]
+rlibc = "0.1.4"

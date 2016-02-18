@@ -11,7 +11,7 @@ asmo := $(wildcard $(bd)/*.o)
 
 
 run: modulon.iso
-	qemu-system-x86_64 -cdrom modulon.iso
+	qemu-system-x86_64 -cdrom modulon.iso -curses
 
 modulon64: $(asmo)
 	$(bdc)

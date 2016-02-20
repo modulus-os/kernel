@@ -172,7 +172,7 @@ p2_table:
 	resb 4096
 
 stack_b:
-	resb 64
+	resb 16384
 
 stack_t:
 

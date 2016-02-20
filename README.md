@@ -1,2 +1,2 @@
-(https://travis-ci.org/modulon/kernel.svg?branch=master)
+![alt text](https://travis-ci.org/modulon/kernel.svg?branch=master)
 # modulon

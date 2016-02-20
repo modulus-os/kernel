@@ -4,8 +4,6 @@ before_install:
 
 language: rust
 rust:
-        - stable
-        - beta
         - nightly
 
 script: make all

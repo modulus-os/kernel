@@ -2,8 +2,6 @@
 #![no_std]
 
 mod vga;
-//mod rlibc;
-
 
 #[no_mangle]
 pub extern fn kmain()
@@ -14,7 +12,7 @@ pub extern fn kmain()
 #[lang = "eh_personality"]
 extern fn eh_personality()
 {
-
+    vga::init();
 }
 
 #[lang = "panic_fmt"]

@@ -1,38 +1,46 @@
-BD = build
-
 ARCH = x86_64
-ASRC = src/arch/$(ARCH)
 
-KERNEL = modulon64
+MODULES = .
+RSRC_DIR = $(addprefix src/, $(MODULES))
+BUILD_DIR = $(addprefix build/, $(MODULES))
 
-LD = ld -n -gc-sections -T $(ASRC)/linker.ld
+RSRC = $(foreach sdir, $(RSRC_DIR), $(wildcard $(sdir)/*.rs))
+ASRC = $(wildcard arch/$(ARCH)/*.asm)
+
+ROBJ = $(patsubst src/%.rs, build/%.o, $(RSRC))
+AOBJ = $(patsubst arch/$(ARCH)/%.asm, build/arch/$(ARCH)/%.o, $(ASRC))
+
 ASM = nasm -f elf64
+RUSTC = rustc -Z no-landing-pads -C no-redzone
+LD = ld -n --gc-sections -T arch/$(ARCH)/linker.ld
 
-ASM_SRC = $(wildcard $(ASRC)/*.asm)
+vpath %.rs $(RSRC_DIR)
 
-RUSTO = target/debug/libmodulon.a
-ASMO = $(patsubst $(ASRC)/%.asm, $(BD)/arch/$(ARCH)/%.asm.o, $(ASM_SRC))
+run: all build/modulon.iso
+	qemu-system-x86_64 -cdrom build/modulon.iso 
 
-run: $(KERNEL).iso
-	qemu-system-x86_64 -cdrom modulon.iso
+all: $(BUILD_DIR) build/modulon
 
-$(KERNEL): $(ASMO) cargo $(RUSTO)
-	@mkdir -p $(BD)/arch/$(ARCH)
-	$(LD) -o $(KERNEL) $(ASMO) $(RUSTO)
+build/modulon: $(AOBJ) $(ROBJ)
+	$(LD) $(AOBJ) $(ROBJ) -o build/modulon
 
-$(BD)/arch/$(ARCH)/%.asm.o: $(ASRC)/%.asm
+build/arch/$(ARCH)/%.o: arch/$(ARCH)/%.asm
 	$(ASM) $< -o $@
 
-cargo:
-	@cargo rustc  -- -Z no-landing-pads -C no-redzone
+build/%.o: %.rs
+	$(RUSTC) $< -o $@ --crate-type staticlib
 
-$(KERNEL).iso: $(KERNEL) $(ASRC)/grub.cfg $(ASRC)/efi.img
-	@mkdir -p $(BD)/grub/boot/grub
-	@cp $(ASRC)/grub.cfg $(BD)/grub/boot/grub
-	@cp $(ASRC)/efi.img $(BD)/grub
-	@cp modulon64 $(BD)/grub/boot
+build/modulon.iso: build/modulon arch/$(ARCH)/efi.img arch/$(ARCH)/grub.cfg
+	@mkdir -p build/iso/boot/grub
+	@cp arch/$(ARCH)/grub.cfg build/iso/boot/grub
+	@cp arch/$(ARCH)/efi.img build/iso
+	@cp build/modulon build/iso/boot
 	@echo
-	grub-mkrescue -o modulon.iso $(BD)/grub
+	@grub-mkrescue -o build/modulon.iso build/iso
 
-clean: $(BD)
-	rm -rf $(BD)
+$(BUILD_DIR):
+	@mkdir -p $@
+	@mkdir -p build/arch/$(ARCH)
+
+clean:
+	rm -rf build

@@ -8,4 +8,4 @@ rust:
         - beta
         - nightly
 
-script: make
+script: make all

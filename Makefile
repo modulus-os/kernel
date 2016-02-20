@@ -1,6 +1,6 @@
 ARCH = x86_64
 
-MODULES = .
+MODULES = . display display/terminal rlibc
 RSRC_DIR = $(addprefix src/, $(MODULES))
 BUILD_DIR = $(addprefix build/, $(MODULES))
 
@@ -14,21 +14,19 @@ ASM = nasm -f elf64
 RUSTC = rustc -Z no-landing-pads -C no-redzone
 LD = ld -n --gc-sections -T arch/$(ARCH)/linker.ld
 
-vpath %.rs $(RSRC_DIR)
-
 run: all build/modulon.iso
 	qemu-system-x86_64 -cdrom build/modulon.iso 
 
 all: $(BUILD_DIR) build/modulon
 
-build/modulon: $(AOBJ) $(ROBJ)
-	$(LD) $(AOBJ) $(ROBJ) -o build/modulon
+build/modulon: $(AOBJ) build/main.o
+	$(LD) $(AOBJ) build/main.o -o build/modulon
 
 build/arch/$(ARCH)/%.o: arch/$(ARCH)/%.asm
 	$(ASM) $< -o $@
 
-build/%.o: %.rs
-	$(RUSTC) $< -o $@ --crate-type staticlib
+build/main.o: $(RSRC)
+	$(RUSTC) src/main.rs -o $@ --crate-type staticlib
 
 build/modulon.iso: build/modulon arch/$(ARCH)/efi.img arch/$(ARCH)/grub.cfg
 	@mkdir -p build/iso/boot/grub

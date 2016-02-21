@@ -7,7 +7,10 @@ bits 32
 start:
 	;Set up stack
 	mov esp, stack_t
-	
+
+	;Store boot info address
+	mov edi, ebx
+
 	;Call checks
 	call check_mb
 	call check_cpuid
@@ -26,10 +29,10 @@ start:
 	mov es, ax ;extra
 
 	;Long jmp to 64 bit code!
+	push edi
 	jmp gdt.code:lm_start
 
 	hlt
-
 
 ;Multiboot header check:
 
@@ -114,7 +117,7 @@ paging_setup_tables:
 	jne .map_p2_table
 
 	ret
-	
+
 paging_enable:
 	;point cr3 to P4
 	mov eax, p4_table
@@ -142,7 +145,7 @@ sse_enable:
     mov eax, 0x1
     cpuid
     test edx, 1 << 25
-    
+
     mov eax, cr0
     and ax, 0xfffb
     or ax, 0x2
@@ -150,7 +153,7 @@ sse_enable:
     mov eax, cr4
     or ax, 3 << 9
     mov cr4, eax
-    
+
     ret
 error:
 	mov dword [0xb8000], 0x4f524f45

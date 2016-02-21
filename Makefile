@@ -1,6 +1,6 @@
 ARCH = x86_64
 
-MODULES = . display display/terminal rlibc
+MODULES = . display display/terminal memory
 RSRC_DIR = $(addprefix src/, $(MODULES))
 BUILD_DIR = $(addprefix build/, $(MODULES))
 
@@ -15,7 +15,7 @@ RUSTC = rustc -Z no-landing-pads -C no-redzone
 LD = ld -n --gc-sections -T arch/$(ARCH)/linker.ld
 
 run: all build/modulon.iso
-	qemu-system-x86_64 -cdrom build/modulon.iso 
+	qemu-system-x86_64 -cdrom build/modulon.iso
 
 all: $(BUILD_DIR) build/modulon
 

@@ -1,7 +1,7 @@
 global lm_start
 extern kmain
 
-section .tect
+section .text
 bits 64
 
 lm_start:

@@ -27,7 +27,7 @@ pub enum Color {
 
 impl Color {
     pub fn make_color(fg: Color, bg: Color) -> u8 {
-        return (bg as u8) << 4 | (fg as u8);
+        (bg as u8) << 4 | (fg as u8)
     }
 }
 
@@ -35,7 +35,7 @@ pub struct Entry(u16);
 
 impl Entry {
     pub fn new(c: u8, color: u8) -> Entry {
-        return Entry((color as u16) << 8 | (c as u16));
+        Entry((color as u16) << 8 | (c as u16))
     }
 }
 
@@ -45,7 +45,7 @@ pub struct Writer {
 
 impl Writer {
     pub fn new(ptr: usize) -> Writer {
-        return Writer{ptr: ptr};
+        Writer{ptr: ptr}
     }
 
     pub fn set_ptr(&mut self, ptr: usize) {
@@ -53,7 +53,7 @@ impl Writer {
     }
 
     fn make_entry(&mut self, color: u8, c: u8) -> u16 {
-       return (color as u16) << 8 | c as u16;
+       (color as u16) << 8 | c as u16
     }
 
     pub unsafe fn write_index(&self, entry: Entry, index: usize) {

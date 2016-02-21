@@ -1,28 +1,38 @@
 #![feature(lang_items)]
 #![no_std]
 
+use core::fmt::Write;
+
 mod display;
-mod rlibc;
+mod memory;
 
 #[no_mangle]
-pub extern fn kmain() {
-    //let writer = display::Writer::new(0xb8000);
+pub extern "C" fn kmain(mb_info: u32) {
     let color: u8 = display::Color::make_color(display::Color::Green, display::Color::Black);
-    let term = display::terminal::Terminal::new();
+    let mut term = display::terminal::Terminal::new();
+	term.set_color(color);
 
     unsafe {
-        term.write_str_index("                _      _          ", color, display::VIDEO_WIDTH + 22);
-        term.write_str_index("  _ __  ___  __| |_  _| |___ _ _  ", color, display::VIDEO_WIDTH * 2 + 22);
-        term.write_str_index(" | '  \\/ _ \\/ _` | || | / _ \\ ' \\ ", color, display::VIDEO_WIDTH * 3 + 22);
-        term.write_str_index(" |_|_|_\\___/\\__,_|\\_,_|_\\___/_||_|", color, display::VIDEO_WIDTH * 4 + 22);
+		term.goto_line(0);
+        write!(term, "                _      _          ");
+		term.goto_line(1);
+        write!(term, "  _ __  ___  __| |_  _| |___ _ _  ");
+		term.goto_line(2);
+        write!(term, " | '  \\/ _ \\/ _` | || | / _ \\ ' \\ ");
+		term.goto_line(3);
+        write!(term, " |_|_|_\\___/\\__,_|\\_,_|_\\___/_||_|");
+		term.goto_line(5);
+		write!(term, "Starting system...");
+		term.goto_line(6);
+		write!(term, "Boot info location: {}", mb_info);
     }
 }
 
 #[lang = "eh_personality"]
-extern fn eh_personality() {
+extern "C" fn eh_personality() {
 }
 
 #[lang = "panic_fmt"]
-extern fn panic_fmt() -> ! {
+extern "C" fn panic_fmt() -> ! {
 	loop{}
 }

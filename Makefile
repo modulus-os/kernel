@@ -16,8 +16,15 @@ LD = ld -n --gc-sections -T arch/$(ARCH)/linker.ld
 
 all: $(BUILD_DIR) build/modulon
 
-run: all build/modulon.iso
-	qemu-system-x86_64 -cdrom build/modulon.iso
+run: build/modulon.iso
+	qemu-system-x86_64 -cdrom build/modulon.iso -s
+
+debug: build/modulon.iso
+	qemu-system-x86_64 -cdrom build/modulon.iso -s -S
+
+objdump: build/modulon
+	touch objdump.txt
+	objdump -D build/modulon | cat >> objdump.txt
 
 build/modulon: $(AOBJ) build/main.o
 	$(LD) $(AOBJ) build/main.o -o build/modulon
@@ -28,7 +35,7 @@ build/arch/$(ARCH)/%.o: arch/$(ARCH)/%.asm
 build/main.o: $(RSRC)
 	$(RUSTC) src/main.rs -o $@ --crate-type staticlib
 
-build/modulon.iso: arch/$(ARCH)/grub.cfg
+build/modulon.iso: arch/$(ARCH)/grub.cfg build/modulon
 	@mkdir -p build/iso/boot/grub
 	@cp arch/$(ARCH)/grub.cfg build/iso/boot/grub
 	@cp build/modulon build/iso/boot

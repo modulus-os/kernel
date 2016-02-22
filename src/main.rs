@@ -1,8 +1,16 @@
-#![feature(lang_items)]
+//!-----------------------------------------------------------------------------------------------
+//!`src/main.rs`
+//!
+//!Main rust file, declares all other modules to be included and implements kmain().
+//!-----------------------------------------------------------------------------------------------
+
 #![no_std]
+
+#![feature(lang_items)]
 
 use core::fmt::Write;
 
+mod support;
 mod display;
 mod memory;
 

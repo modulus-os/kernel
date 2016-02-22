@@ -1,3 +1,11 @@
+//!-----------------------------------------------------------------------------------------------
+//!`src/display/terminal/mod.rs`
+//!
+//!Implements more advanced terminal features, built on top of `src/display/mod.rs`.
+//!-----------------------------------------------------------------------------------------------
+
+#![no_std]
+
 use display;
 use core::fmt;
 
@@ -50,8 +58,4 @@ impl fmt::Write for Terminal {
 		}
 		Ok(())
 	}
-}
-
-pub fn init() {
-	let mut term = Terminal::new();
 }

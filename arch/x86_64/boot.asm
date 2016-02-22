@@ -1,3 +1,9 @@
+;;------------------------------------------------------------------------------------------------
+;;`arch/x86_64/boot.asm`
+;;
+;;Kernel entry file, performs basic system checks and enables paging and long mode.
+;;------------------------------------------------------------------------------------------------
+
 global start
 extern lm_start
 
@@ -5,6 +11,8 @@ section .boot
 bits 32
 
 start:
+	mov word [0xb8000], 0x0248 ; H
+
 	;Set up stack
 	mov esp, stack_t
 
@@ -21,6 +29,7 @@ start:
 	call paging_enable
 	call sse_enable
 
+	;Load GDT
 	lgdt[gdt.pointer]
 
 	mov ax, 16
@@ -28,14 +37,12 @@ start:
 	mov ds, ax ;data
 	mov es, ax ;extra
 
-	;Long jmp to 64 bit code!
-	push edi
+	;Long jmp to 64 bit code
 	jmp gdt.code:lm_start
 
 	hlt
 
 ;Multiboot header check:
-
 check_mb:
 	cmp eax, 0x36d76289
 	jne .no_mb
@@ -45,11 +52,8 @@ check_mb:
 	mov ah, "0"
 	jmp error
 
-;CPUID check from osdev.org
-
+;CPUID check:
 check_cpuid:
-	;Check if CPUID is supported by attempting to flip the ID bit (bit 21) in
-	;the FLAGS register. If we can flip it, CPUID is available.
 	;Copy FLAGS in to EAX via stack
 	pushfd
 	pop eax
@@ -94,13 +98,14 @@ check_long_mode:
 	mov ah, "2"
 	jmp error
 
+;Enable paging and flat map the fist 1G of memory
 paging_setup_tables:
-	;map first P4 entry to P3
+	;Map first P4 entry to P3
 	mov eax, p3_table
 	or eax, 0b11
 	mov dword [p4_table], eax
 
-	;map first P3 entry to P2
+	;Map first P3 entry to P2
 	mov eax, p2_table
 	or eax, 0b11
 	mov dword [p3_table], eax
@@ -119,22 +124,22 @@ paging_setup_tables:
 	ret
 
 paging_enable:
-	;point cr3 to P4
+	;Point cr3 to P4
 	mov eax, p4_table
 	mov cr3, eax
 
-	;enable PAE
+	;Enable PAE
 	mov eax, cr4
 	or eax, 1 << 5
 	mov cr4, eax
 
-	;enable long mode
+	;Enable long mode
 	mov ecx, 0xc0000080
 	rdmsr
 	or eax, 1 << 8
 	wrmsr
 
-	;enable paging
+	;Enable paging
 	mov eax, cr0
 	or eax, 1 << 31
 	mov cr0, eax

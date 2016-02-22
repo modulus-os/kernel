@@ -11,6 +11,7 @@ pub mod terminal;
 pub const VIDEO_WIDTH: usize = 80;
 pub const VIDEO_HEIGHT: usize = 25;
 
+#[allow(dead_code)]
 #[repr(u8)]
 pub enum Color {
 	Black = 0,

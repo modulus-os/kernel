@@ -4,8 +4,6 @@
 //!Basic VGA driver, implements Writer.
 //!-----------------------------------------------------------------------------------------------
 
-#![no_std]
-
 pub mod terminal;
 
 pub const VIDEO_WIDTH: usize = 80;

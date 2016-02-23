@@ -8,30 +8,30 @@
 
 #![feature(lang_items)]
 
-
-
 use core::fmt::Write;
 
-mod support;
-mod multiboot;
+mod lib;
 mod display;
 mod memory;
 
+pub const VERSION_MAJOR: u16 = 0;
+pub const VERSION_MINOR: u16 = 1;
+pub const VERSION_PATCH: u16 = 3;
+
 #[no_mangle]
 pub extern "C" fn kmain(mb_info_address: usize) {
-	let VERSION = "0.1.2";
-
     let color: u8 = display::Color::make_color(display::Color::Green, display::Color::Black);
     let mut term = display::terminal::Terminal::new();
 	term.set_color(color);
 
     unsafe {
 		term.goto_line(0);
-		write!(term, "Modulon v{}", VERSION);
+		write!(term, "Modulon v{}.{}.{}", VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH);
 		term.goto_line(1);
-		let mb_info = multiboot::load(mb_info_address);
-
+		let mb_info = lib::multiboot::BootInfo::new(mb_info_address);
 		write!(term, "Boot info location: {}, boot info size: {}", mb_info_address, mb_info.size);
+		term.goto_line(2);
+		write!(term, "First tag: {}", mb_info.first.typ);
     }
 }
 

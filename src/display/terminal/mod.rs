@@ -4,8 +4,6 @@
 //!Implements more advanced terminal features, built on top of `src/display/mod.rs`.
 //!-----------------------------------------------------------------------------------------------
 
-#![no_std]
-
 use display;
 use core::fmt;
 

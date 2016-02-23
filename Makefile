@@ -1,6 +1,6 @@
 ARCH = x86_64
 
-MODULES = . display display/terminal memory
+MODULES = . display display/terminal memory lib
 RSRC_DIR = $(addprefix src/, $(MODULES))
 BUILD_DIR = $(addprefix build/, $(MODULES))
 
@@ -26,7 +26,7 @@ objdump: build/modulon
 	touch objdump.txt
 	objdump -D build/modulon | cat >> objdump.txt
 
-build/modulon: $(AOBJ) build/main.o
+build/modulon: $(BUILD_DIR) $(AOBJ) build/main.o
 	$(LD) $(AOBJ) build/main.o -o build/modulon
 
 build/arch/$(ARCH)/%.o: arch/$(ARCH)/%.asm
@@ -35,7 +35,7 @@ build/arch/$(ARCH)/%.o: arch/$(ARCH)/%.asm
 build/main.o: $(RSRC)
 	$(RUSTC) src/main.rs -o $@ --crate-type staticlib
 
-build/modulon.iso: arch/$(ARCH)/grub.cfg build/modulon
+build/modulon.iso: build/modulon arch/$(ARCH)/grub.cfg
 	@mkdir -p build/iso/boot/grub
 	@cp arch/$(ARCH)/grub.cfg build/iso/boot/grub
 	@cp build/modulon build/iso/boot

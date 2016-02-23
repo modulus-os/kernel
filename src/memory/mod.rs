@@ -3,5 +3,3 @@
 //!
 //!Important memory management features such as page frame allocation.
 //!-----------------------------------------------------------------------------------------------
-
-#![no_std]

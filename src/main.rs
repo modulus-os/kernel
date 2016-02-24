@@ -24,15 +24,13 @@ pub extern "C" fn kmain(mb_info_address: usize) {
     let mut term = display::terminal::Terminal::new();
 	term.set_color(color);
 
-    unsafe {
-		term.goto_line(0);
-		write!(term, "Modulon v{}.{}.{}", VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH);
-		term.goto_line(1);
-		let mb_info = lib::multiboot::BootInfo::new(mb_info_address);
-		write!(term, "Boot info location: {}, boot info size: {}", mb_info_address, mb_info.size);
-		term.goto_line(2);
-		write!(term, "First tag: {}", mb_info.first.typ);
-    }
+	write!(term, "Modulon v{}.{}.{}", VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH);
+	term.newline();
+
+	let mb_info: &lib::multiboot::BootInfo;
+	unsafe {mb_info = lib::multiboot::BootInfo::new(mb_info_address);}
+
+	write!(term, "Memmap tag found: type = {}", mb_info.get_tag(6).unwrap().typ);
 }
 
 #[lang = "eh_personality"]

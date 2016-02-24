@@ -53,21 +53,20 @@ impl Writer {
         Writer{ptr: ptr}
     }
 
-    pub fn set_ptr(&mut self, ptr: usize) {
-        self.ptr = ptr;
-    }
+	unsafe fn get_buffer(&self) -> *mut u16 {
+		self.ptr as *mut u16
+	}
 
     fn make_entry(&mut self, color: u8, c: u8) -> u16 {
        (color as u16) << 8 | c as u16
     }
 
-    pub unsafe fn write_index(&self, entry: Entry, index: usize) {
-        let buf = (self.ptr + index * 2) as *mut u16;
-        *buf = entry.0 as u16;
+    pub fn write_index(&self, entry: Entry, index: usize) {
+        unsafe{*self.get_buffer().offset(index as isize) = entry.0 as u16;}
     }
 
-    pub unsafe fn write_pos(&self, entry: Entry, x: usize, y: usize) {
-        let buf = (self.ptr + (y * VIDEO_WIDTH + x) * 2) as *mut u16;
-        *buf = entry.0 as u16;
+    pub fn write_pos(&self, entry: Entry, x: usize, y: usize) {
+        let index = y * VIDEO_WIDTH + x;
+        unsafe{*self.get_buffer().offset(index as isize)  = entry.0 as u16;}
     }
 }

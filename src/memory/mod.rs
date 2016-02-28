@@ -1,5 +1,5 @@
 //!-----------------------------------------------------------------------------------------------
 //!`src/memory/mod.rs`
 //!
-//!Important memory management features such as page frame allocation.
+//!Important memory management features such as page management and page frame allocation.
 //!-----------------------------------------------------------------------------------------------

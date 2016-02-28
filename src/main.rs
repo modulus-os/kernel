@@ -10,7 +10,8 @@
 
 use core::fmt::Write;
 
-mod lib;
+mod support;
+mod multiboot;
 mod display;
 mod memory;
 
@@ -27,8 +28,8 @@ pub extern "C" fn kmain(mb_info_address: usize) {
 	write!(term, "Modulon v{}.{}.{}", VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH);
 	term.newline();
 
-	let mb_info: &lib::multiboot::BootInfo;
-	unsafe {mb_info = lib::multiboot::BootInfo::new(mb_info_address);}
+	let mb_info: &multiboot::BootInfo;
+	unsafe {mb_info = multiboot::BootInfo::new(mb_info_address);}
 
 	write!(term, "Memmap tag found: type = {}", mb_info.get_tag(6).unwrap().typ);
 }

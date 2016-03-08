@@ -1,6 +1,6 @@
 ARCH = x86_64
 
-MODULES = . display display/terminal memory lib
+MODULES = . display display/terminal memory lib cpuio
 RSRC_DIR = $(addprefix src/, $(MODULES))
 BUILD_DIR = $(addprefix build/, $(MODULES))
 

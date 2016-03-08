@@ -15,7 +15,7 @@ impl BootInfo {
 		let boot_info = &*(mb_info_address as *const BootInfo);
 		boot_info
 	}
-	
+
 	pub fn tags(&self) -> TagIter {
 		TagIter {current: &self.first as *const _}
 	}

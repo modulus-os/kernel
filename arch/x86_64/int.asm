@@ -1,17 +1,15 @@
 ;;------------------------------------------------------------------------------------------------
-;;`arch/x86_64/lm_start.asm`
+;;`arch/x86_64/interrupt_handlers.asm`
 ;;
-;;First 64 bit file to be called, calls kmain().
+;;Assembly wrappers for IDT functions.
 ;;------------------------------------------------------------------------------------------------
 
-global lm_start
-extern kmain
+global asm_kb_handler
 extern kb_handler
 
 section .text
 bits 64
 
-lm_start:
-	call kmain
+asm_kb_handler:
 	call kb_handler
 	hlt

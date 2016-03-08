@@ -4,7 +4,6 @@
 //!Provides essential std functions memcpy(), memmove(), memset(), and memcmp().
 //!-----------------------------------------------------------------------------------------------
 
-#![feature(asm)]
 #![allow(private_no_mangle_fns)]
 #![allow(dead_code)]
 

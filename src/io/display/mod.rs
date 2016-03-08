@@ -1,5 +1,5 @@
 //!-----------------------------------------------------------------------------------------------
-//!`src/display/mod.rs`
+//!`src/io/display/mod.rs`
 //!
 //!Basic VGA driver, implements Writer.
 //!-----------------------------------------------------------------------------------------------
@@ -31,7 +31,7 @@ pub enum Color {
 }
 
 impl Color {
-    pub fn make_color(fg: Color, bg: Color) -> u8 {
+    pub const fn new(fg: Color, bg: Color) -> u8 {
         (bg as u8) << 4 | (fg as u8)
     }
 }

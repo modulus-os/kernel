@@ -1,9 +1,9 @@
 //!-----------------------------------------------------------------------------------------------
-//!`src/memory/mod.rs`
+//!`src/io/mod.rs`
 //!
-//!Important memory management features such as page management and page frame allocation.
+//!Declares IO submodules.
 //!-----------------------------------------------------------------------------------------------
 
-pub fn alloc() {
-	
-}
+pub mod cpuio;
+pub mod display;
+pub mod interrupt;

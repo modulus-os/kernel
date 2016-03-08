@@ -4,7 +4,7 @@
 //!Implements more advanced terminal features, built on top of `src/display/mod.rs`.
 //!-----------------------------------------------------------------------------------------------
 
-use display;
+use io::display;
 use core::fmt;
 
 pub struct Terminal {
@@ -17,7 +17,7 @@ pub struct Terminal {
 impl Terminal {
     pub fn new() -> Terminal {
         Terminal{writer: display::Writer::new(0xb8000),
-			color: display::Color::make_color(display::Color::White, display::Color::Black),
+			color: display::Color::new(display::Color::White, display::Color::Black),
 			x: 0, y: 0}
     }
 
@@ -42,10 +42,8 @@ impl Terminal {
 impl fmt::Write for Terminal {
 	fn write_str(&mut self, s: &str) -> ::core::fmt::Result {
 		for byte in s.bytes() {
-			unsafe {
-				self.writer.write_index(display::Entry::new(byte, self.color),
-					self.y * display::VIDEO_WIDTH + self.x);
-			}
+			self.writer.write_index(display::Entry::new(byte, self.color),
+				self.y * display::VIDEO_WIDTH + self.x);
 			self.advance();
 		}
 		Ok(())

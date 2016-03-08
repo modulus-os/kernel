@@ -30,7 +30,7 @@ pub struct Tag {
 	pub size: u32,
 }
 
-struct TagIter {
+pub struct TagIter {
 	current: *const Tag,
 }
 

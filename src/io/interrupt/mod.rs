@@ -7,7 +7,10 @@
 pub mod keyboard;
 
 use io::cpuio::Port;
+<<<<<<< HEAD
 use CODE_SEG;
+=======
+>>>>>>> 20e60cf813b3e607ecbd79a6f274dd4a17023802
 
 pub struct Entry {
 	offset_low: u16,
@@ -89,7 +92,6 @@ pub fn init_idt() {
 	}
 
 	cfg1.outb(0xfd);
-
 }
 
 //Assembly interrupt wrappers

@@ -1,6 +1,6 @@
 ARCH = x86_64
 
-MODULES = . display memory lib cpuio multiboot
+MODULES = . io/display io/cpuio io/interrupt memory lib multiboot
 RSRC_DIR = $(addprefix src/, $(MODULES))
 BUILD_DIR = $(addprefix build/, $(MODULES))
 
@@ -12,7 +12,7 @@ AOBJ = $(patsubst arch/$(ARCH)/%.asm, build/arch/$(ARCH)/%.o, $(ASRC))
 
 ASM = nasm -f elf64
 RUSTC = rustc -Z no-landing-pads -C no-redzone
-LD = ld --nmagic --gc-section -T arch/$(ARCH)/linker.ld
+LD = ld --nmagic --gc-section -T arch/$(ARCH)/cfg/linker.ld
 
 all: $(BUILD_DIR) build/modulon
 
@@ -20,7 +20,7 @@ run: build/modulon.iso
 	qemu-system-x86_64 -cdrom build/modulon.iso -s
 
 debug: build/modulon.iso
-	qemu-system-x86_64 -cdrom build/modulon.iso -s -S
+	qemu-system-x86_64 -cdrom build/modulon.iso -s -d int -no-reboot
 
 objdump:
 	touch objdump.txt
@@ -35,9 +35,9 @@ build/arch/$(ARCH)/%.o: arch/$(ARCH)/%.asm
 build/main.o: $(RSRC)
 	$(RUSTC) src/main.rs -o $@ --crate-type staticlib
 
-build/modulon.iso: build/modulon arch/$(ARCH)/grub.cfg
+build/modulon.iso: build/modulon arch/$(ARCH)/cfg/grub.cfg
 	@mkdir -p build/iso/boot/grub
-	@cp arch/$(ARCH)/grub.cfg build/iso/boot/grub
+	@cp arch/$(ARCH)/cfg/grub.cfg build/iso/boot/grub
 	@cp build/modulon build/iso/boot
 	@echo
 	@grub-mkrescue -o build/modulon.iso build/iso -d /usr/lib/grub/i386-pc

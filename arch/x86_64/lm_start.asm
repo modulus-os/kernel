@@ -13,5 +13,4 @@ bits 64
 
 lm_start:
 	call kmain
-	call kb_handler
 	hlt

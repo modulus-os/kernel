@@ -1,4 +1,6 @@
 use io::cpuio::Port;
+use io::display::*;
+use core::fmt::Write;
 
 //let mut tock = 0;
 
@@ -11,7 +13,7 @@ pub extern fn kb_handler() {
 	let eoi = Port::new(0x20);
 	eoi.outb(0x20);
 
-	//let mut term = io::display::terminal::Terminal::new();
+	let mut term = terminal::Terminal::new();
 
-	//write!(term, "INdT");
+	write!(term, "Keyboard");
 }

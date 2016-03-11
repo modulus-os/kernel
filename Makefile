@@ -1,6 +1,8 @@
 ARCH = x86_64
 
-MODULES = . io/display io/cpuio io/interrupt memory lib multiboot
+FILE ?= build/modulon
+
+MODULES = . io/display io/cpuio io/interrupts memory lib multiboot
 RSRC_DIR = $(addprefix src/, $(MODULES))
 BUILD_DIR = $(addprefix build/, $(MODULES))
 

@@ -5,7 +5,9 @@
 ;;------------------------------------------------------------------------------------------------
 
 global asm_kb_handler
-global asm_lidt;
+global asm_lidt
+global asm_int_test
+
 extern kb_handler
 
 section .text
@@ -13,10 +15,15 @@ bits 64
 
 asm_kb_handler:
 	call kb_handler
-	iretd
+	iret
 
 asm_lidt:
-	mov rdx, [esp + 8]
-	lidt[rdx]
+	lidt[rdi]
 	sti
+	ret
+.hang:
+	hlt
+
+asm_int_test:
+	int 0x8
 	ret

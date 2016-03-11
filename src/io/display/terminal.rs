@@ -42,9 +42,14 @@ impl Terminal {
 impl fmt::Write for Terminal {
 	fn write_str(&mut self, s: &str) -> ::core::fmt::Result {
 		for byte in s.bytes() {
-			self.writer.write_index(display::Entry::new(byte, self.color),
-				self.y * display::VIDEO_WIDTH + self.x);
-			self.advance();
+			match byte {
+				b'\n' => self.newline(),
+				byte => {
+					self.writer.write_index(display::Entry::new(byte, self.color),
+					self.y * display::VIDEO_WIDTH + self.x);
+					self.advance();
+				}
+			}
 		}
 		Ok(())
 	}

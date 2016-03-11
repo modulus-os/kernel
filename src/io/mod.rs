@@ -6,4 +6,4 @@
 
 pub mod cpuio;
 pub mod display;
-pub mod interrupt;
+pub mod interrupts;

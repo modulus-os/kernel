@@ -80,7 +80,7 @@ pub fn init_idt() {
 
 	let idt_addr: usize;
 	unsafe {idt_addr = &idt as *const _ as usize;}
-	let idtr = IDTR::new(12 as u16, idt_addr as u64);
+	let idtr = IDTR::new(0x10 as u16, idt_addr as u64);
 
 	term.newline();
 	term.newline();

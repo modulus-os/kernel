@@ -10,7 +10,7 @@
 #![feature(asm)]
 
 pub mod support;
-pub mod multiboot;
+pub mod utils;
 pub mod memory;
 pub mod io;
 pub mod error;
@@ -29,44 +29,23 @@ use io::display::*;
 pub const VERSION_MAJOR: u16 = 0;
 pub const VERSION_MID: u16 = 1;
 pub const VERSION_MINOR: u16 = 5;
-pub const VERSION_COMMIT: u16 = 1;
+pub const VERSION_COMMIT: u16 = 2;
 
 #[no_mangle]
 pub extern fn kmain(mb_info_address: usize) {
 	//Create terminal for logging
 	let mut term = terminal::Terminal::new();
-	term.set_color(common_color::WHITE);
 
 	//Display version
-	write!(term, "Modulon v{}.{}.{}.{}\n\n", VERSION_MAJOR, VERSION_MID, VERSION_MINOR, VERSION_COMMIT);
+	term.set_color(common_color::GREEN);
+	write!(term, " Modulon");
+	term.set_color(common_color::WHITE);
+	write!(term, " v{}.{}.{}.{}\n\n", VERSION_MAJOR, VERSION_MID, VERSION_MINOR, VERSION_COMMIT);
 
-	//Initialize the IDT
-	log_init(&mut term, "Interrupts");
-
-	io::interrupts::init_idt(&mut term);
-
-	end(true, &mut term);
+	utils::init_log::init_log(&mut term, "Init memory management", true);
 
 	//Finished
-	write!(term, "\nINIT COMPLETE");
-}
-
-fn end(success: bool, term: &mut terminal::Terminal) {
-	if success {
-		term.set_color(common_color::GREEN);
-		write!(term, " OK\n");
-	} else {
-		term.set_color(common_color::RED);
-		write!(term, " FAILED\n");
-	}
-	term.set_color(common_color::WHITE);
-}
-
-fn log_init(term: &mut terminal::Terminal, name: &str) {
-	term.set_color(common_color::LCYAN);
-	write!(term, "INIT ");
-	term.set_color(common_color::WHITE);
-	write!(term, "{}", name);
+	utils::init_log::init_log(&mut term, "Init complete", true);
 }
 
 #[lang = "eh_personality"]

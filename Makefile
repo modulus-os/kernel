@@ -1,51 +1,45 @@
 ARCH = x86_64
+TARGET = $(ARCH)-unknown-linux-gnu
 
-FILE ?= build/modulon
+OBJDUMP_FILE ?= target/modulon
 
-MODULES = . io/display io/cpuio io/interrupts memory lib multiboot
-RSRC_DIR = $(addprefix src/, $(MODULES))
-BUILD_DIR = $(addprefix build/, $(MODULES))
+BUILD_DIR = target
 
-RSRC = $(foreach sdir, $(RSRC_DIR), $(wildcard $(sdir)/*.rs))
 ASRC = $(wildcard arch/$(ARCH)/*.asm)
-
-ROBJ = $(patsubst src/%.rs, build/%.o, $(RSRC))
-AOBJ = $(patsubst arch/$(ARCH)/%.asm, build/arch/$(ARCH)/%.o, $(ASRC))
+AOBJ = $(patsubst arch/$(ARCH)/%.asm, target/arch/$(ARCH)/%.o, $(ASRC))
 
 ASM = nasm -f elf64
-RUSTC = rustc -Z no-landing-pads -C no-redzone
+CARGO = cargo rustc --target $(TARGET) -- -Z no-landing-pads -C no-redzone
 LD = ld --nmagic --gc-section -T arch/$(ARCH)/cfg/linker.ld
 
-all: $(BUILD_DIR) build/modulon
+all: target_dir target/modulon
 
-run: build/modulon.iso
-	qemu-system-x86_64 -cdrom build/modulon.iso -s
+run: target/modulon.iso
+	qemu-system-x86_64 -cdrom target/modulon.iso
 
-debug: build/modulon.iso
-	qemu-system-x86_64 -cdrom build/modulon.iso -s -d int -no-reboot
+debug: target/modulon.iso
+	qemu-system-x86_64 -cdrom target/modulon.iso -s -d int -no-reboot
 
 objdump:
 	touch objdump.txt
-	objdump -D $(FILE) | cat >> objdump.txt
+	objdump -D $(OBJDUMP_FILE) | cat >> objdump.txt
 
-build/modulon: $(BUILD_DIR) $(AOBJ) build/main.o
-	$(LD) $(AOBJ) build/main.o -o build/modulon
+target/modulon: target_dir $(AOBJ)
+	$(CARGO)
+	$(LD) $(AOBJ) target/$(TARGET)/debug/libkmain.a -o target/modulon
 
-build/arch/$(ARCH)/%.o: arch/$(ARCH)/%.asm
+target/arch/$(ARCH)/%.o: arch/$(ARCH)/%.asm
 	$(ASM) $< -o $@
 
-build/main.o: $(RSRC)
-	$(RUSTC) src/main.rs -o $@ --crate-type staticlib
-
-build/modulon.iso: build/modulon arch/$(ARCH)/cfg/grub.cfg
-	@mkdir -p build/iso/boot/grub
-	@cp arch/$(ARCH)/cfg/grub.cfg build/iso/boot/grub
-	@cp build/modulon build/iso/boot
+target/modulon.iso: target/modulon arch/$(ARCH)/cfg/grub.cfg
+	@mkdir -p target/iso/boot/grub
+	@cp arch/$(ARCH)/cfg/grub.cfg target/iso/boot/grub
+	@cp target/modulon target/iso/boot
 	@echo
-	@grub-mkrescue -o build/modulon.iso build/iso -d /usr/lib/grub/i386-pc
+	@grub-mkrescue -o target/modulon.iso target/iso -d /usr/lib/grub/i386-pc
 
-$(BUILD_DIR):
-	@mkdir -p build/arch/$(ARCH)
+target_dir:
+	@mkdir -p target/arch/$(ARCH)
 
 clean:
-	rm -rf build
+	rm -rf target

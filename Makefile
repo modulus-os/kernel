@@ -5,14 +5,18 @@ OBJDUMP_FILE ?= target/modulon
 
 BUILD_DIR = target
 
-ASRC = $(wildcard arch/$(ARCH)/*.asm)
-AOBJ = $(patsubst arch/$(ARCH)/%.asm, target/arch/$(ARCH)/%.o, $(ASRC))
+ASRC = $(wildcard src/asm/*.asm)
+AOBJ = $(patsubst src/asm/%.asm, target/asm/%.o, $(ASRC))
 
 ASM = nasm -f elf64
 CARGO = cargo rustc --target $(TARGET) -- -Z no-landing-pads -C no-redzone
-LD = ld --nmagic --gc-section -T arch/$(ARCH)/cfg/linker.ld
+LD = ld --nmagic --gc-section -T src/arch/$(ARCH)/linker.ld
 
 all: target_dir target/modulon
+
+travis:
+	make all
+	cargo test
 
 run: target/modulon.iso
 	qemu-system-x86_64 -cdrom target/modulon.iso
@@ -26,20 +30,20 @@ objdump:
 
 target/modulon: target_dir $(AOBJ)
 	$(CARGO)
-	$(LD) $(AOBJ) target/$(TARGET)/debug/libkmain.a -o target/modulon
+	$(LD) $(AOBJ) target/$(TARGET)/debug/libmodulon.a -o target/modulon
 
-target/arch/$(ARCH)/%.o: arch/$(ARCH)/%.asm
+target/asm/%.o: src/asm/%.asm
 	$(ASM) $< -o $@
 
-target/modulon.iso: target/modulon arch/$(ARCH)/cfg/grub.cfg
+target/modulon.iso: target/modulon src/grub.cfg
 	@mkdir -p target/iso/boot/grub
-	@cp arch/$(ARCH)/cfg/grub.cfg target/iso/boot/grub
+	@cp src/grub.cfg target/iso/boot/grub
 	@cp target/modulon target/iso/boot
 	@echo
 	@grub-mkrescue -o target/modulon.iso target/iso -d /usr/lib/grub/i386-pc
 
 target_dir:
-	@mkdir -p target/arch/$(ARCH)
+	@mkdir -p target/asm
 
 clean:
 	rm -rf target

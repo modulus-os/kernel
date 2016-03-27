@@ -1,10 +1,13 @@
 [package]
 name = "modulon"
 version = "0.1.0"
-authors = ["IceMatrix <epicpotatopro@gmail.com>"]
+authors = ["Sam Harrison <epicpotatopro@gmail.com>"]
 
 [lib]
 crate-type = ["staticlib"]
 
 [dependencies.multiboot2]
 git = "https://github.com/phil-opp/multiboot2-elf64"
+
+[dependencies]
+spin = "0.3"

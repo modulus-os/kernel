@@ -37,6 +37,12 @@ impl Terminal {
 		self.x = 0;
 		self.y += 1;
 	}
+
+	pub fn clear(&mut self) {
+		for i in 0..(display::VIDEO_WIDTH * display::VIDEO_HEIGHT) {
+			self.writer.write_index(display::Entry::new(b' ', self.color), i);
+		}
+	}
 }
 
 impl fmt::Write for Terminal {

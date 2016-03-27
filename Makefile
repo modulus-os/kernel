@@ -5,8 +5,8 @@ OBJDUMP_FILE ?= target/modulon
 
 BUILD_DIR = target
 
-ASRC = $(wildcard src/asm/*.asm)
-AOBJ = $(patsubst src/asm/%.asm, target/asm/%.o, $(ASRC))
+ASRC = $(wildcard src/asm/$(ARCH)/*.asm)
+AOBJ = $(patsubst src/asm/$(ARCH)/%.asm, target/asm/$(ARCH)/%.o, $(ASRC))
 
 ASM = nasm -f elf64
 CARGO = cargo rustc --target $(TARGET) -- -Z no-landing-pads -C no-redzone
@@ -32,7 +32,7 @@ target/modulon: target_dir $(AOBJ)
 	$(CARGO)
 	$(LD) $(AOBJ) target/$(TARGET)/debug/libmodulon.a -o target/modulon
 
-target/asm/%.o: src/asm/%.asm
+target/asm/$(ARCH)/%.o: src/asm/$(ARCH)/%.asm
 	$(ASM) $< -o $@
 
 target/modulon.iso: target/modulon src/grub.cfg
@@ -43,7 +43,7 @@ target/modulon.iso: target/modulon src/grub.cfg
 	@grub-mkrescue -o target/modulon.iso target/iso -d /usr/lib/grub/i386-pc
 
 target_dir:
-	@mkdir -p target/asm
+	@mkdir -p target/asm/$(ARCH)
 
 clean:
 	rm -rf target

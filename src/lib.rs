@@ -13,6 +13,9 @@
 //Multiboot crate for retrieving boot information
 extern crate multiboot2;
 
+//Spinlock crate
+extern crate spin;
+
 //Architecture specific code
 pub mod arch;
 
@@ -53,17 +56,20 @@ pub use arch::x86_64::*;
 pub extern fn kmain(mb_info_address: usize) {
 	//Create terminal for logging
 	let mut term = terminal::Terminal::new();
+	term.clear();
 
-	//Display version
+	//Display version information
 	term.set_color(common_color::GREEN);
 	write!(term, " Modulon");
 	term.set_color(common_color::WHITE);
-	write!(term, " v{}.{}.{}.{}\n\n", VERSION_MAJOR, VERSION_MID, VERSION_MINOR, VERSION_COMMIT);
+	write!(term, " v{}.{}.{}.{} Potato\n\n", VERSION_MAJOR, VERSION_MID,
+		VERSION_MINOR, VERSION_COMMIT);
 
 	utils::init_log::init_log(&mut term, "Init memory management", true);
 
+	//Initialize frame allocation
 	memory::init_frame_alloc(&mut term, mb_info_address);
 
-	//Finished
+	//Initialization complete
 	utils::init_log::init_log(&mut term, "Init complete", true);
 }

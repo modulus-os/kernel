@@ -8,9 +8,10 @@ use memory::{frame_alloc, PAGE_SIZE};
 
 const ENTRY_COUNT: usize = 512;
 
-pub const P4: *mut Table = 0xffffffff_fffff000 as *mut _;
+pub const P4: *mut PageTable = 0xffffffff_fffff000 as *mut _;
 
 ///An entry in a page table
+#[derive(Clone, Copy)]
 pub struct PageEntry(u64);
 
 bitflags! {
@@ -66,5 +67,25 @@ impl PageTable {
 		for entry in self.entries.iter_mut() {
 			entry.clear();
 		}
+	}
+
+	pub fn next_table_address(&self, index: usize) -> Option<usize>{
+		let flags = self.entries[index].flags();
+		if flags.contains(PRESENT) && !flags.contains(HUGE) {
+			let address = self as *const _ as usize;
+			Some((address << 9) | (index << 12))
+		} else {
+			None
+		}
+	}
+
+	pub fn next_table(&self, index: usize) -> Option<&PageTable> {
+		let address = self.next_table_address(index).unwrap();
+		Some(unsafe {&*(address as *const _)})
+	}
+
+	pub fn next_table_mut(&self, index: usize) -> Option<&mut PageTable> {
+		let address = self.next_table_address(index).unwrap();
+		Some(unsafe {&mut *(address as *mut _)})
 	}
 }

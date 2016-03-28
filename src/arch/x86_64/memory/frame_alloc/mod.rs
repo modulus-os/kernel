@@ -4,10 +4,9 @@
 //!Physical frame allocator
 //!-----------------------------------------------------------------------------------------------
 
-///A single page frame
-
 use memory::PAGE_SIZE;
 
+///A single page frame representing a physical frame
 pub struct Frame {
 	pub number: usize,
 }

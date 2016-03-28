@@ -33,14 +33,14 @@ pub mod error;
 pub const VERSION_MAJOR: u16 = 0;
 pub const VERSION_MID: u16 = 1;
 pub const VERSION_MINOR: u16 = 6;
-pub const VERSION_COMMIT: u16 = 1;
+pub const VERSION_COMMIT: u16 = 3;
 
 //Use x86_64 architecture components
 pub use arch::x86_64::*;
 
 use arch::x86_64::io::display::*;
 
-//Initializes kernel
+///Main kernel entry point, called by assembly
 #[no_mangle]
 pub extern fn kmain(mb_info_address: usize) {
 	//Create terminal for logging
@@ -56,6 +56,8 @@ pub extern fn kmain(mb_info_address: usize) {
 	//Initialize frame allocation
 	let mut alloc = memory::init_frame_alloc(mb_info_address);
 
-	print!("First frame {}", alloc.alloc().unwrap().number);
+	print!("Running paging tests...\n");
+
+	memory::paging::test::test();
 	//Initialization complete
 }

@@ -7,7 +7,6 @@
 #![allow(private_no_mangle_fns)]
 #![allow(dead_code)]
 
-#![no_std]
 #![no_builtins]
 
 #[no_mangle]

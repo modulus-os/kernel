@@ -4,6 +4,8 @@
 //!Declares IO submodules.
 //!-----------------------------------------------------------------------------------------------
 
+#![macro_use]
+
 pub mod cpuio;
 pub mod display;
 pub mod interrupts;

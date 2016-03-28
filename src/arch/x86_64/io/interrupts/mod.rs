@@ -4,12 +4,9 @@
 //!Structures for manipulating the IDT.
 //!-----------------------------------------------------------------------------------------------
 
-pub mod keyboard;
 pub mod exceptions;
 
 use io::cpuio::Port;
-use io::display::*;
-use core::fmt::Write;
 
 #[repr(C, packed)]
 #[derive(Clone, Copy)]
@@ -49,14 +46,12 @@ impl IDTR {
 	}
 }
 
-pub fn init_idt(term: &mut terminal::Terminal) {
+pub fn init_idt() {
 
 	let mut idt: [IDTEntry; 256] = [IDTEntry::new(0, 0x08, 0x8e); 256];
 
 	let kb_addr: usize;
-	unsafe {
-		kb_addr = asm_kb_handler as *const () as usize;
-	}
+	kb_addr = asm_kb_handler as *const () as usize;
 
 	idt[0x21] = IDTEntry::new(kb_addr, 0x08, 0x8e);
 
@@ -83,18 +78,14 @@ pub fn init_idt(term: &mut terminal::Terminal) {
 	cfg2.outb(0xff);
 
 	let idt_addr: u64;
-	unsafe {
-		idt_addr = &idt as *const _ as u64;
-	}
+	idt_addr = &idt as *const _ as u64;
 
 	let idtr = IDTR::new((16 * 256) - 1, idt_addr);
 
 	let idtr_addr: u64;
-	unsafe {
-		idtr_addr = &idtr as *const _ as u64;
-	}
+	idtr_addr = &idtr as *const _ as u64;
 
-	write!(term, "\nidtr_addr {:0x}", idtr_addr);
+	print!("\nidtr_addr {:0x}", idtr_addr);
 
 	unsafe {
 		asm_lidt(idtr_addr);
@@ -112,7 +103,7 @@ pub fn init_idt(term: &mut terminal::Terminal) {
 //Assembly interrupt wrappers
 extern {
 	fn asm_lidt(idtr: u64);
-	fn asm_int_test();
+	//fn asm_int_test();
 
 	fn asm_kb_handler();
 }

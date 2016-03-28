@@ -4,50 +4,42 @@
 //!Handles kernel errors/panics
 //!-----------------------------------------------------------------------------------------------
 
-use core::fmt;
 use core::fmt::Write;
 use io::display::*;
-
-use common_color;
 
 //Use Rust core library
 extern crate core;
 
 pub fn panic(file: &str, line: u32) {
-	let mut term = terminal::Terminal::new();
-
-	term.set_color(common_color::RED);
-	write!(term, "\n\n\n\n");
-	error_symbol(&mut term);
-	write!(term, "    !PANIC!    \n\n");
-
-	term.set_color(common_color::WHITE);
-
-	write!(term, "At {}:{}", file, line);
+	terminal::TERM.lock().set_color(common_color::RED);
+	print!("\n\n\n\n");
+	error_symbol();
+	print!("    !PANIC!    \n\n");
+	terminal::TERM.lock().set_color(common_color::WHITE);
+	print!("At {}:{}", file, line);
 }
 
 pub fn exception(err: &str) {
 	let mut term = terminal::Terminal::new();
 
 	term.set_color(common_color::RED);
-	write!(term, "\n\n\n\n");
-	error_symbol(&mut term);
-	write!(term, "  !EXCEPTION!  \n\n");
-
+	print!("\n\n\n\n");
+	error_symbol();
+	print!("  !EXCEPTION!  \n\n");
 	term.set_color(common_color::WHITE);
 
-	write!(term, "{}", err);
+	print!("{}", err);
 }
 
 //Bare error icon
-fn error_symbol(term: &mut terminal::Terminal) {
-	write!(term, "       x       \n");
-	write!(term, "      x x      \n");
-	write!(term, "     x | x     \n");
-	write!(term, "    x  |  x    \n");
-	write!(term, "   x       x   \n");
-	write!(term, "  x    *    x  \n");
-	write!(term, " x===========x \n");
+fn error_symbol() {
+	print!("       x       \n");
+	print!("      x x      \n");
+	print!("     x | x     \n");
+	print!("    x  |  x    \n");
+	print!("   x       x   \n");
+	print!("  x    *    x  \n");
+	print!(" x===========x \n");
 }
 
 #[cfg(not(test))]
@@ -57,8 +49,7 @@ extern fn eh_personality() {
 
 #[cfg(not(test))]
 #[lang = "panic_fmt"]
-extern fn panic_fmt(fmt: core::fmt::Arguments,
-	file: &str, line: u32) -> ! {
+extern fn panic_fmt(file: &str, line: u32) -> ! {
 	panic(file, line);
 	loop{}
 }

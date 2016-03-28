@@ -4,8 +4,18 @@
 //!Implements more advanced terminal features, built on top of `src/display/mod.rs`.
 //!-----------------------------------------------------------------------------------------------
 
+#![macro_use]
+
+macro_rules! print {
+	($($arg:tt)*) => ({
+			use core::fmt::Write;
+			$crate::io::display::terminal::TERM.lock().write_fmt(format_args!($($arg)*)).unwrap();
+	});
+}
+
 use io::display;
 use core::fmt;
+use spin::Mutex;
 
 pub struct Terminal {
     writer: display::Writer,
@@ -14,11 +24,21 @@ pub struct Terminal {
 	y: usize,
 }
 
+pub static TERM: Mutex<Terminal> = Mutex::new(
+	Terminal {
+		writer: display::Writer{ptr: 0xb8000},
+		color: display::Color::new(display::Color::White, display::Color::Black),
+		x: 0, y: 0
+	}
+);
+
 impl Terminal {
     pub fn new() -> Terminal {
-        Terminal{writer: display::Writer::new(0xb8000),
+        Terminal {
+			writer: display::Writer::new(0xb8000),
 			color: display::Color::new(display::Color::White, display::Color::Black),
-			x: 0, y: 0}
+			x: 0, y: 0
+		}
     }
 
 	pub fn set_color(&mut self, color: u8) {

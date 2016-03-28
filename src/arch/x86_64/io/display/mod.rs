@@ -4,7 +4,10 @@
 //!Basic VGA driver, implements Writer.
 //!-----------------------------------------------------------------------------------------------
 
+#![macro_use]
+
 pub mod terminal;
+pub mod common_color;
 
 pub const VIDEO_WIDTH: usize = 80;
 pub const VIDEO_HEIGHT: usize = 25;
@@ -56,10 +59,6 @@ impl Writer {
 	unsafe fn get_buffer(&self) -> *mut u16 {
 		self.ptr as *mut u16
 	}
-
-    fn make_entry(&mut self, color: u8, c: u8) -> u16 {
-       (color as u16) << 8 | c as u16
-    }
 
     pub fn write_index(&self, entry: Entry, index: usize) {
         unsafe{*self.get_buffer().offset(index as isize) = entry.0 as u16;}

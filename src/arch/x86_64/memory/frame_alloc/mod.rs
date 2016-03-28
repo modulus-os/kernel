@@ -45,7 +45,7 @@ impl FrameAlloc {
 	pub fn alloc(&mut self) -> Option<Frame> {
 		let frame = Frame::new(self.next.number);
 		let last_frame = Frame::address(self.max);
-		
+
 		if self.next.number < last_frame.number {
 			self.next.number += 1;
 

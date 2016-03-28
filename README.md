@@ -1,9 +1,11 @@
 ![alt text](https://travis-ci.org/modulon/kernel.svg?branch=master)
+![alt text](https://img.shields.io/hexpm/l/plug.svg)
+
 # Modulon v0.1.6 Buttered Potato
 
 Modulon is a 64 bit operating system written in Rust.
 
-#Features
+# Features
 
 * 64 bit
 * VGA module

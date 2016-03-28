@@ -5,6 +5,7 @@
 //!-----------------------------------------------------------------------------------------------
 
 pub mod frame_alloc;
+pub mod paging;
 
 use multiboot2;
 
@@ -21,7 +22,6 @@ pub fn init_frame_alloc(mb_info_address: usize) -> frame_alloc::FrameAlloc {
 	let mut total_memory: u64 = 0;
 
 	for area in memory_map_tag.memory_areas() {
-		//print!("Area base: {}, Area end: {}\n", area.base_addr, area.base_addr + area.length);
 		if area.length as usize > greatest_area_len {
 			greatest_area_base = area.base_addr as usize;
 			greatest_area_len = area.length as usize;

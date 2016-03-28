@@ -16,6 +16,10 @@ extern crate multiboot2;
 //Spinlock crate
 extern crate spin;
 
+//Bitflags crate
+#[macro_use]
+extern crate bitflags;
+
 //Architecture specific code
 pub mod arch;
 
@@ -29,11 +33,12 @@ pub mod error;
 pub const VERSION_MAJOR: u16 = 0;
 pub const VERSION_MID: u16 = 1;
 pub const VERSION_MINOR: u16 = 6;
-pub const VERSION_COMMIT: u16 = 0;
+pub const VERSION_COMMIT: u16 = 1;
 
 //Use x86_64 architecture components
 pub use arch::x86_64::*;
-pub use arch::x86_64::io::display::*;
+
+use arch::x86_64::io::display::*;
 
 //Initializes kernel
 #[no_mangle]

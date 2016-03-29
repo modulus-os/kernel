@@ -1,17 +1,14 @@
-//!-----------------------------------------------------------------------------------------------
-//!`src/arch/x86_64/memory/mod.rs`
-//!
-//!Important memory management features such as page management and page frame allocation.
-//!-----------------------------------------------------------------------------------------------
-
-pub mod frame_alloc;
+pub mod alloc;
+pub mod frame;
 pub mod paging;
 
 use multiboot2;
 
 pub const PAGE_SIZE: usize = 4096;
+const ENTRY_COUNT: usize = 512;
 
-pub fn init_frame_alloc(mb_info_address: usize) -> frame_alloc::FrameAlloc {
+
+pub fn init_area_frame_alloc(mb_info_address: usize) -> alloc::area::AreaFrameAlloc {
 	let boot_info = unsafe { multiboot2::load(mb_info_address) };
 
 	let memory_map_tag = boot_info.memory_map_tag().expect(
@@ -32,5 +29,6 @@ pub fn init_frame_alloc(mb_info_address: usize) -> frame_alloc::FrameAlloc {
 
 	print!("Total memory: {} bytes\n", total_memory);
 
-	frame_alloc::FrameAlloc::new(greatest_area_base, greatest_area_base + greatest_area_len)
+	let area = alloc::area::Area::new(greatest_area_base, greatest_area_base + greatest_area_len);
+	alloc::area::AreaFrameAlloc::new(area)
 }

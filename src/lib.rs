@@ -38,6 +38,8 @@ pub const VERSION_COMMIT: u16 = 3;
 //Use x86_64 architecture components
 pub use arch::x86_64::*;
 
+use arch::x86_64::memory::alloc::FrameAlloc;
+
 use arch::x86_64::io::display::*;
 
 ///Main kernel entry point, called by assembly
@@ -54,10 +56,11 @@ pub extern fn kmain(mb_info_address: usize) {
 		VERSION_MINOR, VERSION_COMMIT);
 
 	//Initialize frame allocation
-	let mut alloc = memory::init_frame_alloc(mb_info_address);
+	let mut alloc = memory::init_area_frame_alloc(mb_info_address);
+	print!("First frame number: {}\n", alloc.alloc().expect("Unable to unwrap").number);
+	print!("First frame number: {}\n", alloc.alloc().expect("Unable to unwrap").number);
 
 	print!("Running paging tests...\n");
 
-	memory::paging::test::test();
 	//Initialization complete
 }

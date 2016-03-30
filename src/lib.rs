@@ -61,6 +61,6 @@ pub extern fn kmain(mb_info_address: usize) {
 	print!("First frame number: {}\n", alloc.alloc().expect("Unable to unwrap").number);
 
 	print!("Running paging tests...\n");
-
+	memory::paging::test::test();
 	//Initialization complete
 }

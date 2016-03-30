@@ -98,10 +98,10 @@ check_long_mode:
 
 ;Enable paging and flat map the fist 1G of memory
 paging_setup_tables:
-	;Map last P4 entry rto P4 for recursive mapping
+	;Map last P4 entry to P4 for recursive mapping
 	mov eax, p4_table
 	or eax, 0b11
-	mov dword [p4_table + 511 * 8], eax
+	mov [p4_table + 511 * 8], eax
 
 	;Map first P4 entry to P3
 	mov eax, p3_table

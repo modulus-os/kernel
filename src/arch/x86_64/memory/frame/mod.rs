@@ -17,4 +17,8 @@ impl Frame {
 			number: address / PAGE_SIZE,
 		}
 	}
+
+	pub fn to_address(&self) -> usize {
+		self.number * PAGE_SIZE
+	}
 }

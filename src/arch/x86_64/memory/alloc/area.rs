@@ -1,4 +1,4 @@
-pub use memory::alloc::*;
+use memory::alloc::*;
 use memory::frame::*;
 
 ///Represents a memory area

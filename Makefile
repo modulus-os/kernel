@@ -12,8 +12,10 @@ ASM = nasm -f elf64
 CARGO = cargo rustc --target $(TARGET) -- -Z no-landing-pads -C no-redzone
 LD = ld --nmagic --gc-section -T src/arch/$(ARCH)/linker.ld
 
+QEMU ?= -enable-kvm
+
 run: target/modulon.iso
-	qemu-system-x86_64 -cdrom target/modulon.iso -enable-kvm
+	qemu-system-x86_64 -cdrom target/modulon.iso $(QEMU)
 
 all: target_dir target/modulon
 

@@ -1,6 +1,6 @@
 pub mod alloc;
 pub mod frame;
-pub mod paging;
+pub mod page;
 
 use multiboot2;
 

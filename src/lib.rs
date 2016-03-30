@@ -33,7 +33,7 @@ pub mod error;
 pub const VERSION_MAJOR: u16 = 0;
 pub const VERSION_MID: u16 = 1;
 pub const VERSION_MINOR: u16 = 6;
-pub const VERSION_COMMIT: u16 = 3;
+pub const VERSION_COMMIT: u16 = 4;
 
 //Use x86_64 architecture components
 pub use arch::x86_64::*;
@@ -61,6 +61,6 @@ pub extern fn kmain(mb_info_address: usize) {
 	print!("First frame number: {}\n", alloc.alloc().expect("Unable to unwrap").number);
 
 	print!("Running paging tests...\n");
-	memory::paging::test::test();
+	memory::page::test::test();
 	//Initialization complete
 }

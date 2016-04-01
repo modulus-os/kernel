@@ -3,14 +3,14 @@ use memory::page::*;
 use memory::frame::*;
 use memory::alloc::*;
 
-pub const P4: *mut PageTable = 0xffff_ffff_ffff_f000 as *mut _;
+pub const ACTIVE_TABLE: ActiveTable = ActiveTable::new();
 
 ///Structure for manipulating page tables
-pub struct PageTable {
-	entries: [PageEntry; ENTRY_COUNT],
+pub struct Table {
+	entries: [Entry; ENTRY_COUNT],
 }
 
-impl PageTable {
+impl Table {
 	pub fn clear(&mut self) {
 		for entry in self.entries.iter_mut() {
 			entry.clear();
@@ -29,50 +29,41 @@ impl PageTable {
 			None
 		}
 	}
+}
 
-	pub fn next_table(&self, index: usize) -> Option<&PageTable> {
-		let address = self.next_table_address(index).expect("Unable to get next_table");
-		Some(unsafe {&*(address as *const _)})
-	}
+///A top-level structure containing all active tables
+pub struct ActiveTable {
+	pub p4: *mut Table,
+	pub p3: *mut Table,
+	pub p2: *mut Table,
+	pub p1: *mut Table,
+}
 
-	pub fn next_table_mut(&self, index: usize) -> Option<&mut PageTable> {
-		let address = self.next_table_address(index).expect("Unable to get next_table_mut");
-		Some(unsafe {&mut *(address as *mut _)})
-	}
-
-	pub fn next_table_create<A>(&mut self, index: usize, allocator: &mut A) -> &mut PageTable
-		where A: FrameAlloc
-	{
-		if self.next_table(index).is_none() {
-			assert!(!self.entries[index].flags().contains(HUGE), "Huge pages not supported");
-			let frame = allocator.alloc().expect("Unable to allocate frame");
-			self.entries[index].set(frame, PRESENT | WRITABLE);
-			self.next_table_mut(index).unwrap().clear();
+impl ActiveTable {
+	pub const fn new() -> ActiveTable {
+		ActiveTable {
+			p4: 0o177777_777_777_777_777_0000 as *mut _,
+			p3: 0o177777_777_777_777_000_0000 as *mut _,
+			p2: 0o177777_777_777_000_000_0000 as *mut _,
+			p1: 0o177777_777_000_000_000_0000 as *mut _,
 		}
-		self.next_table_mut(index).unwrap()
+	}
+		
+	pub fn table(&self, table: *mut Table) -> &Table {
+		unsafe {&*(table as *const _)}
 	}
 
-	pub fn translate(virtual_address: usize) -> Option<usize> {
-		print!("Testing...");
-		let offset = virtual_address % PAGE_SIZE;
-		let frame = PageTable::translate_page(Page::from_address(virtual_address));
-		Some(0 * PAGE_SIZE + offset)
+	pub fn table_mut(&self, table: *mut Table) -> &mut Table {
+		unsafe {&mut *(table as *mut _)}
 	}
-
-	pub fn translate_page(page: Page) -> Option<Frame> {
-		//Walk down page tables to find frame
-		let p3 = unsafe { &*P4 }.next_table(page.p4_index());
-
-		let frame = p3.and_then(|p3| p3.next_table(page.p3_index()))
-      		.and_then(|p2| p2.next_table(page.p2_index()))
-      		.and_then(|p1| p1.entries[page.p1_index()].frame());
-		Some(Frame::from_number(0))
+	
+	pub fn translate() {
+		
 	}
 }
 
-
 ///A page table entry
-pub struct PageEntry(u64);
+pub struct Entry(u64);
 
 bitflags! {
 	///Flags used by page table
@@ -90,7 +81,7 @@ bitflags! {
 	}
 }
 
-impl PageEntry {
+impl Entry {
 	pub fn clear(&mut self) {
 		self.0 = 0;
 	}

@@ -24,10 +24,10 @@ pub fn init_area_frame_alloc(mb_info_address: usize) -> alloc::area::AreaFrameAl
 			greatest_area_len = area.length as usize;
 		}
 
-		total_memory += area.length;
+		total_memory = area.base_addr + area.length;
 	}
 
-	print!("Total memory: {} bytes\n", total_memory);
+	print!("Memory: {}MB\n", total_memory / (1024 * 1024));
 
 	let area = alloc::area::Area::new(greatest_area_base, greatest_area_base + greatest_area_len);
 	alloc::area::AreaFrameAlloc::new(area)

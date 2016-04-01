@@ -23,11 +23,11 @@ extern crate bitflags;
 //Architecture specific code
 pub mod arch;
 
+//System functions
+pub mod system;
+
 //Standard support library
 pub mod support;
-
-//Error/panic handling
-pub mod error;
 
 //Version information
 pub const VERSION_MAJOR: u16 = 0;
@@ -38,7 +38,7 @@ pub const VERSION_COMMIT: u16 = 4;
 //Use x86_64 architecture components
 pub use arch::x86_64::*;
 
-use arch::x86_64::memory::alloc::FrameAlloc;
+//use arch::x86_64::memory::alloc::FrameAlloc;
 
 use arch::x86_64::io::display::*;
 
@@ -56,11 +56,16 @@ pub extern fn kmain(mb_info_address: usize) {
 		VERSION_MINOR, VERSION_COMMIT);
 
 	//Initialize frame allocation
+	print!(" >> Initializing memory management\n");
 	let mut alloc = memory::init_area_frame_alloc(mb_info_address);
-	print!("First frame number: {}\n", alloc.alloc().expect("Unable to unwrap").number);
-	print!("First frame number: {}\n", alloc.alloc().expect("Unable to unwrap").number);
-
-	print!("Running paging tests...\n");
+	
+	let port = io::cpuio::Port::new(0x60);
+	while port.inb() == 250 {
+		
+	}
+	
+	system::reboot::reboot();
+	
 	memory::page::test::test();
 	//Initialization complete
 }

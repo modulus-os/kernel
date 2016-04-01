@@ -4,14 +4,14 @@
 //!Exception handlers for the CPU
 //!-----------------------------------------------------------------------------------------------
 
-use error;
+use system::panic;
 
 #[no_mangle]
 pub fn divzero() {
-	error::exception("Divide By Zero");
+	panic::exception("Divide By Zero");
 }
 
 #[no_mangle]
 pub fn page_fault() {
-	error::exception("Divide By Zero");
+	panic::exception("Divide By Zero");
 }

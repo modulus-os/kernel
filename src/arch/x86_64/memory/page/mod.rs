@@ -1,7 +1,7 @@
 use memory::PAGE_SIZE;
 
-use memory::alloc::*;
-use memory::frame::*;
+//use memory::alloc::*;
+//use memory::frame::*;
 
 pub mod table;
 pub mod test;

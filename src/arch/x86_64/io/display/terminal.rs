@@ -56,11 +56,20 @@ impl Terminal {
 	pub fn newline(&mut self) {
 		self.x = 0;
 		self.y += 1;
+		if self.y > display::VIDEO_HEIGHT {
+			self.scroll();
+		}
 	}
 
 	pub fn clear(&mut self) {
 		for i in 0..(display::VIDEO_WIDTH * display::VIDEO_HEIGHT) {
 			self.writer.write_index(display::Entry::new(b' ', self.color), i);
+		}
+	}
+	
+	pub fn scroll(&mut self) {
+		for i in 0..(display::VIDEO_WIDTH * display::VIDEO_HEIGHT) {
+			self.writer.write_index(self.writer.at(i + display::VIDEO_WIDTH), i);
 		}
 	}
 }

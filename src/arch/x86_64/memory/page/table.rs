@@ -29,36 +29,32 @@ impl Table {
 			None
 		}
 	}
-}
+	
+	pub fn next_table(&self, index: usize) -> &Table {
+		let address = self.next_table_address(index).expect("Page not present or is huge");
+		unsafe {&*(address as *const _)}
+	}
 
+	pub fn next_table_mut(&self, index: usize) -> &mut Table {
+		let address = self.next_table_address(index).expect("Page not present or is huge");
+		unsafe {&mut *(address as *mut _)}
+	}
+
+}
 ///A top-level structure containing all active tables
 pub struct ActiveTable {
 	pub p4: *mut Table,
-	pub p3: *mut Table,
-	pub p2: *mut Table,
-	pub p1: *mut Table,
 }
 
 impl ActiveTable {
 	pub const fn new() -> ActiveTable {
 		ActiveTable {
 			p4: 0o177777_777_777_777_777_0000 as *mut _,
-			p3: 0o177777_777_777_777_000_0000 as *mut _,
-			p2: 0o177777_777_777_000_000_0000 as *mut _,
-			p1: 0o177777_777_000_000_000_0000 as *mut _,
 		}
 	}
-		
-	pub fn table(&self, table: *mut Table) -> &Table {
-		unsafe {&*(table as *const _)}
-	}
-
-	pub fn table_mut(&self, table: *mut Table) -> &mut Table {
-		unsafe {&mut *(table as *mut _)}
-	}
 	
-	pub fn translate() {
-		
+	pub fn translate() -> usize {
+		3
 	}
 }
 

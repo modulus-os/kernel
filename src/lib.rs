@@ -59,13 +59,9 @@ pub extern fn kmain(mb_info_address: usize) {
 	print!(" >> Initializing memory management\n");
 	let mut alloc = memory::init_area_frame_alloc(mb_info_address);
 	
-	let port = io::cpuio::Port::new(0x60);
-	while port.inb() == 250 {
-		
-	}
-	
-	system::reboot::reboot();
+	terminal::TERM.lock().scroll();
 	
 	memory::page::test::test();
+	
 	//Initialization complete
 }

@@ -1,5 +1,5 @@
-//System reboot function
+// System reboot function
 pub mod power;
 
-//Rust panic_fmt function
+// Rust panic_fmt function
 pub mod panic;

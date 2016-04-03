@@ -5,7 +5,7 @@ use memory::alloc::*;
 
 pub const ACTIVE_TABLE: ActiveTable = ActiveTable::new();
 
-///Structure for manipulating page tables
+/// Structure for manipulating page tables
 pub struct Table {
 	entries: [Entry; ENTRY_COUNT],
 }
@@ -17,11 +17,11 @@ impl Table {
 		}
 	}
 
-	//Thanks to recursive mapping, the next page table
-	//can be accessed by shifting 9 bits left
+	// Thanks to recursive mapping, the next page table
+	// can be accessed by shifting 9 bits left
 	pub fn next_table_address(&self, index: usize) -> Option<usize> {
 		let flags = self.entries[index].flags();
-		//Huge pages not currently supported
+		// Huge pages not currently supported
 		if flags.contains(PRESENT) && !flags.contains(HUGE) {
 			let address = self as *const _ as usize;
 			Some((address << 9) | (index << 12))
@@ -29,7 +29,7 @@ impl Table {
 			None
 		}
 	}
-	
+
 	pub fn next_table(&self, index: usize) -> &Table {
 		let address = self.next_table_address(index).expect("Page not present or is huge");
 		unsafe {&*(address as *const _)}
@@ -41,7 +41,7 @@ impl Table {
 	}
 
 }
-///A top-level structure containing all active tables
+/// A top-level structure containing all active tables
 pub struct ActiveTable {
 	pub p4: *mut Table,
 }
@@ -52,17 +52,17 @@ impl ActiveTable {
 			p4: 0o177777_777_777_777_777_0000 as *mut _,
 		}
 	}
-	
+
 	pub fn translate() -> usize {
 		3
 	}
 }
 
-///A page table entry
+/// A page table entry
 pub struct Entry(u64);
 
 bitflags! {
-	///Flags used by page table
+	/// Flags used by page table
 	flags EntryFlags: u64 {
 		const PRESENT = 1 << 0,
 		const WRITABLE = 1 << 1,
@@ -100,7 +100,7 @@ impl Entry {
 	}
 
 	pub fn frame(&self) -> Option<Frame> {
-		//Make sure this page is PRESENT
+		// Make sure this page is PRESENT
 		if self.flags().contains(PRESENT) {
 			Some(Frame::from_address(self.address() as usize))
 		} else {

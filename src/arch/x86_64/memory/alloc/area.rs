@@ -1,7 +1,7 @@
 use memory::alloc::*;
 use memory::frame::*;
 
-///Represents a memory area
+/// Represents a memory area
 pub struct Area {
 	pub min: usize,
 	pub max: usize,
@@ -16,7 +16,7 @@ impl Area {
 	}
 }
 
-///Allocates page frames for a specific memory area
+/// Allocates page frames for a specific memory area
 pub struct AreaFrameAlloc {
 	next: Frame,
 	area: Area,

@@ -1,5 +1,5 @@
 use memory::page::table::*;
 
 pub fn test() {
-	//PageTable::translate(0);
+	// PageTable::translate(0);
 }

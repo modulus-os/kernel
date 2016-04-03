@@ -1,6 +1,6 @@
 use memory::PAGE_SIZE;
 
-///A representation of a physical memory frame
+/// A representation of a physical memory frame
 pub struct Frame {
 	pub number: usize,
 }

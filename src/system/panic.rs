@@ -1,13 +1,13 @@
-//!-----------------------------------------------------------------------------------------------
-//!`src/error.rs`
-//!
-//!Handles kernel errors/panics
-//!-----------------------------------------------------------------------------------------------
+// !-----------------------------------------------------------------------------------------------
+// !`src/error.rs`
+// !
+// !Handles kernel errors/panics
+// !-----------------------------------------------------------------------------------------------
 
 use core::fmt::Write;
 use io::display::*;
 
-//Use Rust core library
+// Use Rust core library
 extern crate core;
 
 pub fn panic(file: &str, line: u32) {
@@ -31,7 +31,7 @@ pub fn exception(err: &str) {
 	print!("{}", err);
 }
 
-//Bare error icon
+// Bare error icon
 fn error_symbol() {
 	print!("       x       \n");
 	print!("      x x      \n");

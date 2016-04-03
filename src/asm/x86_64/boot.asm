@@ -150,19 +150,20 @@ paging_enable:
 	ret
 
 sse_enable:
-    mov eax, 0x1
-    cpuid
-    test edx, 1 << 25
+  mov eax, 0x1
+  cpuid
+  test edx, 1 << 25
 
-    mov eax, cr0
-    and ax, 0xfffb
-    or ax, 0x2
-    mov cr0, eax
-    mov eax, cr4
-    or ax, 3 << 9
-    mov cr4, eax
+  mov eax, cr0
+  and ax, 0xfffb
+  or ax, 0x2
+  mov cr0, eax
+  mov eax, cr4
+	or ax, 3 << 9
+  mov cr4, eax
 
-    ret
+  ret
+
 error:
 	mov dword [0xb8000], 0x4f524f45
 	mov dword [0xb8004], 0x4f3a4f52

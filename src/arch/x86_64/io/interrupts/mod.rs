@@ -1,8 +1,8 @@
-//!-----------------------------------------------------------------------------------------------
-//!`src/io/interrupts/mod.rs`
-//!
-//!Structures for manipulating the IDT.
-//!-----------------------------------------------------------------------------------------------
+// !-----------------------------------------------------------------------------------------------
+// !`src/io/interrupts/mod.rs`
+// !
+// !Structures for manipulating the IDT.
+// !-----------------------------------------------------------------------------------------------
 
 pub mod exceptions;
 
@@ -60,11 +60,11 @@ pub fn init_idt() {
 	let cfg1 = Port::new(0x21);
 	let cfg2 = Port::new(0xa1);
 
-	//Start config
+	// Start config
 	init1.outb(0x11);
 	init2.outb(0x11);
 
-	//Remap IRQs
+	// Remap IRQs
 	cfg1.outb(0x20);
 	cfg2.outb(0x28);
 
@@ -89,21 +89,21 @@ pub fn init_idt() {
 
 	unsafe {
 		asm_lidt(idtr_addr);
-		//Test it
-		//asm_int_test();
+		// Test it
+		// asm_int_test();
 	}
 
-	//exceptions::divzero();
+	// exceptions::divzero();
 
-	//Enable keyboard
+	// Enable keyboard
 	cfg1.outb(0xfd);
 	cfg2.outb(0xff);
 }
 
-//Assembly interrupt wrappers
+// Assembly interrupt wrappers
 extern {
 	fn asm_lidt(idtr: u64);
-	//fn asm_int_test();
+	// fn asm_int_test();
 
 	fn asm_kb_handler();
 }

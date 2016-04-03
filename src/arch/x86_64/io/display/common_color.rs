@@ -1,4 +1,4 @@
-//Commonly used colors
+// Commonly used colors
 use io::display::Color;
 
 pub const WHITE: u8 = Color::new(Color::White, Color::Black);

@@ -1,11 +1,8 @@
-// !-----------------------------------------------------------------------------------------------
-// !`src/io/mod.rs`
-// !
-// !Declares IO submodules.
-// !-----------------------------------------------------------------------------------------------
+/// CPU port I/O
+pub mod pio;
 
-#![macro_use]
-
-pub mod cpuio;
+/// Basic VGA driver
 pub mod display;
+
+/// Interrupt handling
 pub mod interrupts;

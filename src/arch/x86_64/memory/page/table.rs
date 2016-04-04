@@ -1,11 +1,7 @@
-use memory::{ENTRY_COUNT, PAGE_SIZE};
-use memory::page::*;
+use memory::{ ENTRY_COUNT };
 use memory::frame::*;
-use memory::alloc::*;
 
-pub const ACTIVE_TABLE: ActiveTable = ActiveTable::new();
-
-/// Structure for manipulating page tables
+/// A page table.
 pub struct Table {
 	entries: [Entry; ENTRY_COUNT],
 }
@@ -17,8 +13,10 @@ impl Table {
 		}
 	}
 
-	// Thanks to recursive mapping, the next page table
-	// can be accessed by shifting 9 bits left
+    /// Returns address of the next table with the given index
+	/// 
+    /// Because of recursive mapping, the next page table
+	/// can be accessed by shifting 9 bits left.
 	pub fn next_table_address(&self, index: usize) -> Option<usize> {
 		let flags = self.entries[index].flags();
 		// Huge pages not currently supported
@@ -41,28 +39,16 @@ impl Table {
 	}
 
 }
-/// A top-level structure containing all active tables
-pub struct ActiveTable {
-	pub p4: *mut Table,
-}
-
-impl ActiveTable {
-	pub const fn new() -> ActiveTable {
-		ActiveTable {
-			p4: 0o177777_777_777_777_777_0000 as *mut _,
-		}
-	}
-
-	pub fn translate() -> usize {
-		3
-	}
-}
 
 /// A page table entry
+///
+/// Used in page tables to map memory.
 pub struct Entry(u64);
 
 bitflags! {
-	/// Flags used by page table
+    /// Page table entry flags
+    ///
+	/// Special flags in table entries used for privileges, cache, etc.
 	flags EntryFlags: u64 {
 		const PRESENT = 1 << 0,
 		const WRITABLE = 1 << 1,

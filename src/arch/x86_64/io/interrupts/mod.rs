@@ -1,12 +1,6 @@
-// !-----------------------------------------------------------------------------------------------
-// !`src/io/interrupts/mod.rs`
-// !
-// !Structures for manipulating the IDT.
-// !-----------------------------------------------------------------------------------------------
-
 pub mod exceptions;
 
-use io::cpuio::Port;
+use io::pio::Port;
 
 #[repr(C, packed)]
 #[derive(Clone, Copy)]

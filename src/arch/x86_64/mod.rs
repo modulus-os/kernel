@@ -1,12 +1,5 @@
-// !-----------------------------------------------------------------------------------------------
-// !`src/arch/mod.rs`
-// !
-// !Code for the x86_64 architecture
-// !-----------------------------------------------------------------------------------------------
-
-
-#![macro_use]
-
-// Memory management for the x86_64 architecture
+/// I/O functions for the x86_64 architecture
 pub mod io;
+
+/// Memory management for the x86_64 architecture
 pub mod memory;

@@ -20,8 +20,8 @@ run: target/modulon.iso
 all: target_dir target/modulon
 
 travis:
-	make all
-	cargo test
+	make all -j
+	cargo test -j8
 
 debug: target/modulon.iso
 	qemu-system-x86_64 -cdrom target/modulon.iso -s -d int -no-reboot

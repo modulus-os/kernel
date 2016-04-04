@@ -1,10 +1,9 @@
 use memory::PAGE_SIZE;
 
-// use memory::alloc::*;
-// use memory::frame::*;
-
+/// Page table manipulator
+///
+/// Allows mapping of virtual addresses by modifying page tables.
 pub mod table;
-pub mod test;
 
 /// A representation of a virtual memory page
 pub struct Page {
@@ -30,22 +29,22 @@ impl Page {
 		self.number * PAGE_SIZE
 	}
 
-	// Finds index of page in P4 table
+	/// Returns index of page in P4 table
 	pub fn p4_index(&self) -> usize {
 		(self.number >> 27) & 0o777
 	}
 
-	// Finds index of page in P3 table
+	/// Returns index of page in P3 table
 	pub fn p3_index(&self) -> usize {
 		(self.number >> 18) & 0o777
 	}
 
-	// Finds index of page in P2 table
+	/// Returns index of page in P2 table
 	pub fn p2_index(&self) -> usize {
 		(self.number >> 9) & 0o777
 	}
 
-	// Finds index of page in P1 table
+	/// Returns index of page in P1 table
 	pub fn p1_index(&self) -> usize {
 		self.number & 0o777
 	}

@@ -34,14 +34,13 @@ target/modulon: target_dir $(AOBJ)
 	$(CARGO)
 	$(LD) $(AOBJ) target/$(TARGET)/debug/libmodulon.a -o target/modulon
 
-target/asm/$(ARCH)/%.o: src/asm/$(ARCH)/%.asm
+target/asm/$(ARCH)/%.o: target/asm/%.asm src/asm/$(ARCH)/%.asm
 	$(ASM) $< -o $@
 
 target/modulon.iso: target/modulon src/arch/$(ARCH)/grub.cfg
 	@mkdir -p target/iso/boot/grub
 	@cp src/arch/$(ARCH)/grub.cfg target/iso/boot/grub
 	@cp target/modulon target/iso/boot
-	@echo
 	@grub-mkrescue -o target/modulon.iso target/iso -d /usr/lib/grub/i386-pc
 
 target_dir:

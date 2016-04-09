@@ -1,4 +1,4 @@
-use arch::x86_64::io::pio::Port;
+use io::pio::Port;
 
 /// Simple system reboot using 8042 keyboard controller
 pub fn reboot() {

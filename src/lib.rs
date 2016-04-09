@@ -34,6 +34,12 @@ pub mod common;
 /// Rust depends on these functions to compile.
 pub mod support;
 
+
+/// Architecture independent I/O drivers
+///
+///Includes Port I/O and display drivers.
+pub mod io;
+
 // Version information
 pub const VERSION_MAJOR: u16 = 0;
 pub const VERSION_MID: u16 = 1;
@@ -65,7 +71,7 @@ pub extern fn kmain(mb_info_address: usize) {
 	// Initialize frame allocation
 	print!(" >> Initializing memory management\n");
 	let mut alloc = memory::init_area_frame_alloc(mb_info_address);
-    
+
     // Test frame allocation
     alloc.alloc();
 

@@ -5,45 +5,44 @@ use io::display::*;
 extern crate core;
 
 pub fn panic(file: &str, line: u32) {
-	terminal::TERM.lock().set_color(common_color::RED);
-	print!("\n\n\n\n");
-	error_symbol();
-	print!("    !PANIC!    \n\n");
-	terminal::TERM.lock().set_color(common_color::WHITE);
-	print!("At {}:{}", file, line);
+    terminal::TERM.lock().set_color(common_color::RED);
+    print!("\n\n\n\n");
+    error_symbol();
+    print!("    !PANIC!    \n\n");
+    terminal::TERM.lock().set_color(common_color::WHITE);
+    print!("At {}:{}", file, line);
 }
 
 pub fn exception(err: &str) {
-	let mut term = terminal::Terminal::new();
+    let mut term = terminal::Terminal::new();
 
-	term.set_color(common_color::RED);
-	print!("\n\n\n\n");
-	error_symbol();
-	print!("  !EXCEPTION!  \n\n");
-	term.set_color(common_color::WHITE);
+    term.set_color(common_color::RED);
+    print!("\n\n\n\n");
+    error_symbol();
+    print!("  !EXCEPTION!  \n\n");
+    term.set_color(common_color::WHITE);
 
-	print!("{}", err);
+    print!("{}", err);
 }
 
 // Bare error icon
 fn error_symbol() {
-	print!("       x       \n");
-	print!("      x x      \n");
-	print!("     x | x     \n");
-	print!("    x  |  x    \n");
-	print!("   x       x   \n");
-	print!("  x    *    x  \n");
-	print!(" x===========x \n");
+    print!("       x       \n");
+    print!("      x x      \n");
+    print!("     x | x     \n");
+    print!("    x  |  x    \n");
+    print!("   x       x   \n");
+    print!("  x    *    x  \n");
+    print!(" x===========x \n");
 }
 
 #[cfg(not(test))]
 #[lang = "eh_personality"]
-extern fn eh_personality() {
-}
+extern "C" fn eh_personality() {}
 
 #[cfg(not(test))]
 #[lang = "panic_fmt"]
-extern fn panic_fmt(file: &str, line: u32) -> ! {
-	panic(file, line);
-	loop{}
+extern "C" fn panic_fmt(file: &str, line: u32) -> ! {
+    panic(file, line);
+    loop {}
 }

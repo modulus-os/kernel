@@ -16,28 +16,23 @@ extern crate bitflags;
 #[macro_use]
 /// Macros
 pub mod macros;
-
 /// Architecture specific code
 ///
 /// This module contains code that is not architecture independent, which would otherwise pollute
 /// the main kernel code.
 pub mod arch;
-
 /// Common functions
 ///
 /// Contains common kernel functions such as power management and panic handling.
 pub mod common;
-
 /// Standard support library
 ///
 /// Contains memory manipulation functions such as memcpy, memmove, memset, and memcmp.
 /// Rust depends on these functions to compile.
 pub mod support;
-
-
 /// Architecture independent I/O drivers
 ///
-///Includes Port I/O and display drivers.
+/// Includes Port I/O and display drivers.
 pub mod io;
 
 // Version information
@@ -57,23 +52,29 @@ use memory::alloc::FrameAlloc;
 /// This is the main kernel entry point. It is called by `src/asm/x86_64/lm_start.asm`.
 /// This function initializes the kernel.
 #[no_mangle]
-pub extern fn kmain(mb_info_address: usize) {
-	// Create terminal for logging
-	terminal::TERM.lock().clear();
+pub extern "C" fn kmain(mb_info_address: usize) {
+    // Create terminal for logging
+    terminal::TERM.lock().clear();
 
-	// Display version information
-	terminal::TERM.lock().set_color(common_color::GREEN);
-	print!("Modulon");
-	terminal::TERM.lock().set_color(common_color::WHITE);
-	print!(" v{}.{}.{}.{} Buttered Potato\n\n", VERSION_MAJOR, VERSION_MID,
-		VERSION_MINOR, VERSION_COMMIT);
+    // Display version information
+    terminal::TERM.lock().set_color(common_color::GREEN);
+    print!("Modulon");
+    terminal::TERM.lock().set_color(common_color::WHITE);
+    print!(" v{}.{}.{}.{} Buttered Potato\n\n",
+           VERSION_MAJOR,
+           VERSION_MID,
+           VERSION_MINOR,
+           VERSION_COMMIT);
 
-	// Initialize frame allocation
-	print!(" >> Initializing memory management\n");
-	let mut alloc = memory::init_area_frame_alloc(mb_info_address);
+    // Initialize frame allocation
+    print!(" >> Initializing memory management\n");
+    let mut alloc = memory::init_area_frame_alloc(mb_info_address);
 
     // Test frame allocation
     alloc.alloc();
 
-	// Initialization complete
+    // Test paging
+    memory::test_paging(&mut alloc);
+
+    // Initialization complete
 }

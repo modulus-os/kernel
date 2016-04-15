@@ -41,6 +41,7 @@ target/modulon.iso: target/modulon src/arch/$(ARCH)/grub.cfg
 	@mkdir -p target/iso/boot/grub
 	@cp src/arch/$(ARCH)/grub.cfg target/iso/boot/grub
 	@cp target/modulon target/iso/boot
+	@mkdir -p target/iso/etc/default
 	@echo
 	@grub-mkrescue -o target/modulon.iso target/iso -d /usr/lib/grub/i386-pc
 
@@ -49,7 +50,7 @@ target_dir:
 
 clean:
 	rm -rf target
-	rustfmt src/lib.rs --write-mode=overwrite
+	cargo fmt -- src/lib.rs --write-mode=overwrite
 
 doc-kernel:
 	cargo doc

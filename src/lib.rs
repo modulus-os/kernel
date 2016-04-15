@@ -53,7 +53,7 @@ use memory::alloc::FrameAlloc;
 /// This function initializes the kernel.
 #[no_mangle]
 pub extern "C" fn kmain(mb_info_address: usize) {
-    // Create terminal for logging
+    // Clear text-mode terminal
     terminal::TERM.lock().clear();
 
     // Display version information
@@ -67,7 +67,7 @@ pub extern "C" fn kmain(mb_info_address: usize) {
            VERSION_COMMIT);
 
     // Initialize frame allocation
-    print!(" >> Initializing memory management\n");
+    // print!(" >> Initializing memory management\n");
     let mut alloc = memory::init_area_frame_alloc(mb_info_address);
 
     // Test frame allocation

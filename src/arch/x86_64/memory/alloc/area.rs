@@ -3,12 +3,12 @@ use memory::frame::*;
 
 /// Represents a memory area
 pub struct Area {
-    pub min: usize,
-    pub max: usize,
+    pub min: u64,
+    pub max: u64,
 }
 
 impl Area {
-    pub fn new(min: usize, max: usize) -> Area {
+    pub fn new(min: u64, max: u64) -> Area {
         Area {
             min: min,
             max: max,

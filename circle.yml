@@ -1,0 +1,7 @@
+dependencies:
+  post:
+    - sudo apt-get update && sudo apt-get install nasm
+    - curl -sSf https://static.rust-lang.org/rustup.sh | sh -s -- --channel=nightly --yes
+test:
+  override:
+    - make all -j

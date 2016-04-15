@@ -1,9 +1,9 @@
-![alt text](https://travis-ci.org/modulon/kernel.svg?branch=master)
-![alt text](https://img.shields.io/hexpm/l/plug.svg)
+![alt text](https://circleci.com/gh/modulon/kernel.svg?style=shield&circle-token=:circle-token)
+![alt text](https://img.shields.io/badge/license-Apache%202.0-brightgreen.svg)
 
-# Modulon v0.1.6 Buttered Potato
+# Modulos v0.1.6 Buttered Potato
 
-Modulon is a 64 bit operating system written in Rust.
+Modulos is a 64 bit operating system written in Rust.
 
 # Features
 

@@ -58,7 +58,7 @@ pub extern "C" fn kmain(mb_info_address: usize) {
 
     // Display version information
     terminal::TERM.lock().set_color(common_color::GREEN);
-    print!("Modulon");
+    print!("Modulos");
     terminal::TERM.lock().set_color(common_color::WHITE);
     print!(" v{}.{}.{}.{} Buttered Potato\n\n",
            VERSION_MAJOR,

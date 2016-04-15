@@ -1,6 +1,6 @@
 [package]
-name = "modulon"
-version = "0.1.0"
+name = "modulos"
+version = "0.1.6"
 authors = ["Sam Harrison <epicpotatopro@gmail.com>"]
 
 [lib]

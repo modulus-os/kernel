@@ -22,26 +22,24 @@ pub const ENTRY_SIZE: u64 = 8;
 pub const P4: u64 = 0o1777777777777777770000;
 
 pub struct Page {
-	number: u64,
+    number: u64,
 }
 
 impl Page {
-	pub fn new(number: u64) -> Self {
-		Page {
-			number: number,
-		}
-	}
+    pub fn new(number: u64) -> Self {
+        Page { number: number }
+    }
 
-	pub fn virt_addr(&self) -> u64 {
-		self.number * PAGE_SIZE
-	}
+    pub fn virt_addr(&self) -> u64 {
+        self.number * PAGE_SIZE
+    }
 
-	fn get_p4() -> *mut u64 {
-		P4 as *mut u64
-	}
+    fn get_p4() -> *mut u64 {
+        P4 as *mut u64
+    }
 
-	pub fn create_tables() {
-		let p4_entry = unsafe { *Page::get_p4().offset(0) };
-		print!("{:0b}", p4_entry & NO_FLAGS);	
-	}
+    pub fn create_tables() {
+        let p4_entry = unsafe { *Page::get_p4().offset(0) };
+        print!("{:0b}", p4_entry & NO_FLAGS);
+    }
 }

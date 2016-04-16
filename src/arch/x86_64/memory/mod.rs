@@ -41,5 +41,5 @@ pub fn init_area_frame_alloc(mb_info_address: usize) -> alloc::area::AreaFrameAl
 }
 
 pub fn test_paging(allocator: &mut alloc::area::AreaFrameAlloc) {
-	paging::Page::create_tables();
+    paging::Page::create_tables();
 }

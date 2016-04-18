@@ -1,6 +1,5 @@
-use core::ptr;
 use memory::PAGE_SIZE;
-use memory::frame::Frame;
+// use memory::frame::Frame;
 use memory::alloc::FrameAlloc;
 
 pub const PRESENT: u64 = 1 << 0;
@@ -34,12 +33,82 @@ impl Page {
         self.number * PAGE_SIZE
     }
 
-    fn get_p4() -> *mut u64 {
-        P4 as *mut u64
+    /// Returns index of page in P4 table
+    pub fn p4_index(&self) -> u64 {
+        (self.number >> 27) & 0o777
     }
 
-    pub fn create_tables() {
-        let p4_entry = unsafe { *Page::get_p4().offset(0) };
-        print!("{:0b}", p4_entry & NO_FLAGS);
+    /// Returns index of page in P3 table
+    pub fn p3_index(&self) -> u64 {
+        (self.number >> 18) & 0o777
+    }
+
+    /// Returns index of page in P2 table
+    pub fn p2_index(&self) -> u64 {
+        (self.number >> 9) & 0o777
+    }
+
+    /// Returns index of page in P1 table
+    pub fn p1_index(&self) -> u64 {
+        self.number & 0o777
+    }
+
+    fn get_table(address: u64, index: isize) -> u64 {
+        unsafe { *(address as *mut u64).offset(index) }
+    }
+
+    fn get_table_mut(address: u64, index: isize) -> *mut u64 {
+        unsafe { (address as *mut u64).offset(index) }
+    }
+
+    /// Tests if next table exists and allocates a new one if not
+    fn create_next_table<T: FrameAlloc>(allocator: &mut T, address: u64, index: isize) -> u64 {
+        let mut entry = Page::get_table(address, index);
+
+        if (entry & PRESENT) != 0 {
+            print!("PT present: {:0b}\n", entry);
+        } else {
+            print!("PT not present, allocating\n");
+
+            let frame = allocator.alloc();
+            unsafe {
+                *Page::get_table_mut(address, index) = (frame.unwrap().number * PAGE_SIZE) |
+                                                       PRESENT |
+                                                       WRITABLE;
+            }
+            entry = Page::get_table(address, index);
+            print!("PT created: {:0b}\n", entry);
+        }
+
+        entry
+    }
+
+    /// Create page tables and allocate page
+    ///
+    /// This function walks through the page tables. If the next table is present, it jumps
+    /// to it and continues. Otherwise, it allocates a frame and writes its address to the entry.
+    /// Once it is done, it allocates the actual frame.
+    pub fn map_page<T: FrameAlloc>(&self, allocator: &mut T) {
+        // Entry in P4 (P3 location)
+        print!(" -- P4 --\n");
+        let p4_entry = Page::create_next_table(allocator, P4, self.p4_index() as isize);
+
+        // Entry in P3 (P2 location)
+        print!(" -- P3 --\n");
+        let p3_entry = Page::create_next_table(allocator,
+                                               p4_entry & NO_FLAGS,
+                                               self.p3_index() as isize);
+
+        // Entry in P2 (P1 location)
+        print!(" -- P2 --\n");
+        let p2_entry = Page::create_next_table(allocator,
+                                               p3_entry & NO_FLAGS,
+                                               self.p2_index() as isize);
+
+        // Entry in P1 (Page or P0 location)
+        print!(" -- P1 --\n");
+        let p1_entry = Page::create_next_table(allocator,
+                                               p2_entry & NO_FLAGS,
+                                               self.p1_index() as isize);
     }
 }

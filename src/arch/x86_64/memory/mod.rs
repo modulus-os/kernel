@@ -1,9 +1,10 @@
-use core::ptr;
 use multiboot2;
 
 pub mod alloc;
 pub mod frame;
 pub mod paging;
+
+use memory::alloc::area::AreaFrameAlloc;
 
 pub const PAGE_SIZE: u64 = 4096;
 
@@ -41,5 +42,6 @@ pub fn init_area_frame_alloc(mb_info_address: usize) -> alloc::area::AreaFrameAl
 }
 
 pub fn test_paging(allocator: &mut alloc::area::AreaFrameAlloc) {
-    paging::Page::create_tables();
+    let page = paging::Page::new(223123);
+    page.map_page::<AreaFrameAlloc>(allocator);
 }

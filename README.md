@@ -7,7 +7,6 @@ Modulus is a 64 bit operating system written in Rust which aims to be flexible a
 
 Here is a small list of currently implemented features:
 
-* 64-bit
-* VGA module
-* Physical page frame allocator
-* Panic handling
+* 64-bit mode
+* Paging memory management system
+* Display module

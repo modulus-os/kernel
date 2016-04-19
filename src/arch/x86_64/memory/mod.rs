@@ -38,8 +38,3 @@ pub fn init_area_frame_alloc(mb_info_address: usize) -> alloc::area::AreaFrameAl
                                       greatest_area_base + greatest_area_len);
     alloc::area::AreaFrameAlloc::new(area)
 }
-
-pub fn test_paging(allocator: &mut alloc::area::AreaFrameAlloc) {
-    let page = paging::Page::new(0x0);
-    page.map_page(0x0, allocator);
-}

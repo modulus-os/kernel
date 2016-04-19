@@ -38,8 +38,8 @@ pub mod io;
 // Version information
 pub const VERSION_MAJOR: u16 = 0;
 pub const VERSION_MID: u16 = 1;
-pub const VERSION_MINOR: u16 = 6;
-pub const VERSION_COMMIT: u16 = 5;
+pub const VERSION_MINOR: u16 = 7;
+pub const VERSION_COMMIT: u16 = 0;
 
 // Reexport x86_64 architecture components
 pub use arch::x86_64::*;
@@ -60,21 +60,16 @@ pub extern "C" fn kmain(mb_info_address: usize) {
     terminal::TERM.lock().set_color(common_color::GREEN);
     print!("Modulus");
     terminal::TERM.lock().set_color(common_color::WHITE);
-    print!(" v{}.{}.{}.{} Buttered Potato\n\n",
+    print!(" v{}.{}.{}.{}\n\n",
            VERSION_MAJOR,
            VERSION_MID,
            VERSION_MINOR,
            VERSION_COMMIT);
 
     // Initialize frame allocation
-    // print!(" >> Initializing memory management\n");
+    print!(" >> Initializing memory management\n");
     let mut alloc = memory::init_area_frame_alloc(mb_info_address);
 
-    // Test frame allocation
-    alloc.alloc();
-
-    // Test paging
-    memory::test_paging(&mut alloc);
-
     // Initialization complete
+    loop {}
 }

@@ -64,9 +64,8 @@ impl Page {
     /// Tests if next table exists and allocates a new one if not
     fn create_next_table<T: FrameAlloc>(allocator: &mut T, address: u64, index: isize) -> u64 {
         let mut entry = Page::get_table(address, index);
-
         if (entry & PRESENT) != 0 {
-            print!("PT present: {:0b}\n", entry);
+
         } else {
             let frame = allocator.alloc();
             unsafe {
@@ -75,7 +74,6 @@ impl Page {
                                                        WRITABLE;
             }
             entry = Page::get_table(address, index);
-            print!("PT allocated: {:0b}\n", entry);
         }
 
         entry
@@ -87,8 +85,7 @@ impl Page {
             *Page::get_table_mut(address, index) = (physical_addr * PAGE_SIZE) | flags;
         }
 
-		let entry = Page::get_table(address, index);
-		print!("PT allocated: {:0b}\n", entry);
+        let entry = Page::get_table(address, index);
     }
 
     /// Create page tables and allocate page
@@ -98,23 +95,19 @@ impl Page {
     /// Once it is done, it allocates the actual frame.
     pub fn map_page<T: FrameAlloc>(&self, address: u64, allocator: &mut T) {
         // Entry in P4 (P3 location)
-        print!("P4:\n");
         let p4_entry = Page::create_next_table(allocator, P4, self.p4_index() as isize);
 
         // Entry in P3 (P2 location)
-        print!("P3:\n");
         let p3_entry = Page::create_next_table(allocator,
                                                p4_entry & NO_FLAGS,
                                                self.p3_index() as isize);
 
         // Entry in P2 (P1 location)
-        print!("P2:\n");
         let p2_entry = Page::create_next_table(allocator,
                                                p3_entry & NO_FLAGS,
                                                self.p2_index() as isize);
 
         // Entry in P1 (Page or P0 location)
-        print!("P1:\n");
         Page::create_page(address,
                           (PRESENT | WRITABLE),
                           p2_entry & NO_FLAGS,

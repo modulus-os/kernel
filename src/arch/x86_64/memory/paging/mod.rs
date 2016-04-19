@@ -84,8 +84,6 @@ impl Page {
         unsafe {
             *Page::get_table_mut(address, index) = (physical_addr * PAGE_SIZE) | flags;
         }
-
-        let entry = Page::get_table(address, index);
     }
 
     /// Create page tables and allocate page

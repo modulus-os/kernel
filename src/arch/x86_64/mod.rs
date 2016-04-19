@@ -1,5 +1,5 @@
-/// IDT config the x86_64 architecture
-pub mod interrupts;
+/// Interrupts
+pub mod int;
 
-/// Memory management for the x86_64 architecture
+/// Memory management
 pub mod memory;

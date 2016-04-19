@@ -15,7 +15,7 @@ bits 64
 
 asm_kb_handler:
 	call kb_handler
-	iret
+	iretq
 
 asm_lidt:
 	lidt[rdi]

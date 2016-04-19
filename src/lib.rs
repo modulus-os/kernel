@@ -39,13 +39,12 @@ pub mod io;
 pub const VERSION_MAJOR: u16 = 0;
 pub const VERSION_MID: u16 = 1;
 pub const VERSION_MINOR: u16 = 7;
-pub const VERSION_COMMIT: u16 = 0;
+pub const VERSION_COMMIT: u16 = 1;
 
 // Reexport x86_64 architecture components
 pub use arch::x86_64::*;
 
 use io::display::*;
-use memory::alloc::FrameAlloc;
 
 /// Kernel main
 ///
@@ -68,7 +67,7 @@ pub extern "C" fn kmain(mb_info_address: usize) {
 
     // Initialize frame allocation
     print!(" >> Initializing memory management\n");
-    let mut alloc = memory::init_area_frame_alloc(mb_info_address);
+    let alloc = memory::init_area_frame_alloc(mb_info_address);
 
     // Initialization complete
     loop {}

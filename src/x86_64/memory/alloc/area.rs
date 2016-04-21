@@ -1,5 +1,4 @@
 use memory::alloc::*;
-use memory::frame::*;
 
 /// Represents a memory area
 pub struct Area {

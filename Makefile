@@ -10,7 +10,7 @@ AOBJ = $(patsubst src/asm/$(ARCH)/%.asm, target/asm/$(ARCH)/%.o, $(ASRC))
 
 ASM = nasm -f elf64
 CARGO = cargo rustc --target $(TARGET) -- -Z no-landing-pads -C no-redzone
-LD = ld --nmagic --gc-section -T src/arch/$(ARCH)/linker.ld
+LD = ld --nmagic --gc-section -T src/$(ARCH)/linker.ld
 
 QEMU ?= -enable-kvm
 
@@ -37,9 +37,9 @@ target/modulus: target_dir $(AOBJ)
 target/asm/$(ARCH)/%.o: src/asm/$(ARCH)/%.asm
 	$(ASM) $< -o $@
 
-target/modulus.iso: target/modulus src/arch/$(ARCH)/grub.cfg
+target/modulus.iso: target/modulus src/$(ARCH)/grub.cfg
 	@mkdir -p target/iso/boot/grub
-	@cp src/arch/$(ARCH)/grub.cfg target/iso/boot/grub
+	@cp src/$(ARCH)/grub.cfg target/iso/boot/grub
 	@cp target/modulus target/iso/boot
 	@mkdir -p target/iso/etc/default
 	@echo

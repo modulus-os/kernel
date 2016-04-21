@@ -13,13 +13,12 @@ extern kb_handler
 section .text
 bits 64
 
-asm_kb_handler:
-	call kb_handler
-	iretq
+;asm_kb_handler:
+;	call kb_handler
+;	iretq
 
 asm_lidt:
 	lidt[rdi]
-	sti
 	ret
 .hang:
 	hlt

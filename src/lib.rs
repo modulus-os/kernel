@@ -10,17 +10,12 @@ extern crate multiboot2;
 extern crate spin;
 
 #[macro_use]
-// Bitflags crate
-extern crate bitflags;
-
-#[macro_use]
 /// Macros
 pub mod macros;
-/// Architecture specific code
+/// x86_64 specific code
 ///
-/// This module contains code that is not architecture independent, which would otherwise pollute
-/// the main kernel code.
-pub mod arch;
+/// This module contains code specific to the x86_64 architecture such as MM, interrupts, etc.
+pub mod x86_64;
 /// Common functions
 ///
 /// Contains common kernel functions such as power management and panic handling.
@@ -42,7 +37,7 @@ pub const VERSION_MINOR: u16 = 7;
 pub const VERSION_COMMIT: u16 = 1;
 
 // Reexport x86_64 architecture components
-pub use arch::x86_64::*;
+pub use x86_64::*;
 
 use io::display::*;
 
@@ -52,6 +47,7 @@ use io::display::*;
 /// This function initializes the kernel.
 #[no_mangle]
 pub extern "C" fn kmain(mb_info_address: usize) {
+
     // Clear text-mode terminal
     terminal::TERM.lock().clear();
 
@@ -69,6 +65,20 @@ pub extern "C" fn kmain(mb_info_address: usize) {
     print!(" >> Initializing memory management\n");
     let alloc = memory::init_area_frame_alloc(mb_info_address);
 
-    // Initialization complete
+    // Initialize PIC
+    print!(" >> Initializing PIC\n");
+    int::pic::remap(0x20, 0x28);
+    // Temporarily mask PICs
+    io::pio::outb(0x21, 0xfd);
+    io::pio::outb(0x2a, 0xff);
+
+    // Initialize IDT
+    print!(" >> Initializing IDT\n");
+    let mut idt = int::Idt::new();
+
+    let divzero = int::Entry::new(0x0, 0x08, 0x8e);
+    idt.add_isr(0x0, divzero);
+    idt.install();
+
     loop {}
 }

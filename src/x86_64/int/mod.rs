@@ -1,4 +1,8 @@
+/// PIC functions
+pub mod pic;
+
 /// 64-bit IDT descriptor entry
+#[derive(Copy, Clone, Debug)]
 pub struct Entry {
     offset_low: u16,
     selector: u16,
@@ -20,5 +24,33 @@ impl Entry {
             offset_high: ((address & 0xffffffff00000000) >> 32) as u32,
             zero2: 0,
         }
+    }
+}
+
+pub struct Idtr {
+    limit: u16,
+    address: u64,
+}
+
+pub struct Idt {
+    entries: [Entry; 256],
+}
+
+impl Idt {
+    pub fn new() -> Self {
+        Idt { entries: [Entry::new(0x0, 0x0, 0x0); 256] }
+    }
+
+    pub fn add_isr(&mut self, index: usize, isr: Entry) {
+        self.entries[index] = isr;
+    }
+
+    pub fn install(&self) {
+        let limit = 16 * 256 - 1;
+        let address = &self.entries[0] as *const _ as u64;
+        let idtr = Idtr {
+            limit: limit,
+            address: address,
+        };
     }
 }

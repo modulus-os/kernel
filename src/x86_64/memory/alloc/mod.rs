@@ -1,5 +1,7 @@
 use memory::PAGE_SIZE;
 
+pub mod area;
+
 /// A representation of a physical memory frame
 pub struct Frame {
     pub number: u64,
@@ -17,4 +19,9 @@ impl Frame {
     pub fn to_address(&self) -> u64 {
         self.number * PAGE_SIZE
     }
+}
+
+pub trait FrameAlloc {
+    fn alloc(&mut self) -> Option<Frame>;
+    fn dealloc(&mut self, frame: Frame);
 }

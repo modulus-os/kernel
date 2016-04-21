@@ -31,10 +31,7 @@ pub mod support;
 pub mod io;
 
 // Version information
-pub const VERSION_MAJOR: u16 = 0;
-pub const VERSION_MID: u16 = 1;
-pub const VERSION_MINOR: u16 = 7;
-pub const VERSION_COMMIT: u16 = 1;
+pub const VERSION: &'static str = "0.1.7";
 
 // Reexport x86_64 architecture components
 pub use x86_64::*;
@@ -53,13 +50,9 @@ pub extern "C" fn kmain(mb_info_address: usize) {
 
     // Display version information
     terminal::TERM.lock().set_color(common_color::GREEN);
-    print!("Modulus");
+    print!("Modulus ");
     terminal::TERM.lock().set_color(common_color::WHITE);
-    print!(" v{}.{}.{}.{}\n\n",
-           VERSION_MAJOR,
-           VERSION_MID,
-           VERSION_MINOR,
-           VERSION_COMMIT);
+    print!("{}\n\n", VERSION);
 
     // Initialize frame allocation
     print!(" >> Initializing memory management\n");
@@ -75,9 +68,6 @@ pub extern "C" fn kmain(mb_info_address: usize) {
     // Initialize IDT
     print!(" >> Initializing IDT\n");
     let mut idt = int::Idt::new();
-
-    let divzero = int::Entry::new(0x0, 0x08, 0x8e);
-    idt.add_isr(0x0, divzero);
     idt.install();
 
     loop {}

@@ -45,12 +45,22 @@ impl Idt {
         self.entries[index] = isr;
     }
 
-    pub fn install(&self) {
+    pub fn install(&mut self) {
         let limit = 16 * 256 - 1;
         let address = &self.entries[0] as *const _ as u64;
+
+        let divzero = &asm_divzero as *const _ as u64;
+        self.add_isr(0x0, Entry::new(divzero, 0x8, 0x8e));
+
         let idtr = Idtr {
             limit: limit,
             address: address,
         };
     }
+}
+
+extern "C" {
+    fn asm_divzero();
+
+    fn asm_lidt(idtr: Idtr);
 }

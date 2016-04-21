@@ -13,16 +13,14 @@ extern kb_handler
 section .text
 bits 64
 
-;asm_kb_handler:
-;	call kb_handler
-;	iretq
+asm_divzero:
+	iretq
 
 asm_lidt:
 	lidt[rdi]
+	sti
+	;int 0x0
 	ret
+
 .hang:
 	hlt
-
-asm_int_test:
-	int 0x8
-	ret

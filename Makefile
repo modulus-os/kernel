@@ -15,16 +15,13 @@ LD = ld --nmagic --gc-section -T src/$(ARCH)/linker.ld
 QEMU ?= -enable-kvm
 
 run: target/modulus.iso
-	qemu-system-x86_64 -cdrom target/modulus.iso $(QEMU)
+	qemu-system-x86_64 -cdrom target/modulus.iso -s -d int -no-reboot $(QEMU)
 
 all: target_dir target/modulus
 
 travis:
 	make all -j
 	cargo test -j8
-
-debug: target/modulus.iso
-	qemu-system-x86_64 -cdrom target/modulus.iso -s -d int -no-reboot
 
 objdump:
 	touch objdump.txt

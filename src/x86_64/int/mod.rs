@@ -1,8 +1,38 @@
+/// Defines exception handlers
+pub mod exceptions;
+
 /// PIC functions
 pub mod pic;
 
+pub fn init() {
+    let mut idt: [Entry; 256] = [Entry::new(0x0, 0x0, 0x0); 256];
+
+    idt[0] = Entry::new(exceptions::de as *const () as u64, 0x8, 0x8e);
+    idt[1] = Entry::new(exceptions::db as *const () as u64, 0x8, 0x8e);
+    idt[2] = Entry::new(exceptions::nmi as *const () as u64, 0x8, 0x8e);
+    idt[3] = Entry::new(exceptions::bp as *const () as u64, 0x8, 0x8e);
+    idt[4] = Entry::new(exceptions::of as *const () as u64, 0x8, 0x8e);
+    idt[5] = Entry::new(exceptions::br as *const () as u64, 0x8, 0x8e);
+    idt[6] = Entry::new(exceptions::ud as *const () as u64, 0x8, 0x8e);
+    idt[7] = Entry::new(exceptions::nm as *const () as u64, 0x8, 0x8e);
+    idt[8] = Entry::new(exceptions::df as *const () as u64, 0x8, 0x8e);
+    idt[9] = Entry::new(exceptions::cmf as *const () as u64, 0x8, 0x8e);
+    idt[10] = Entry::new(exceptions::ts as *const () as u64, 0x8, 0x8e);
+    idt[11] = Entry::new(exceptions::np as *const () as u64, 0x8, 0x8e);
+    idt[12] = Entry::new(exceptions::ss as *const () as u64, 0x8, 0x8e);
+    idt[13] = Entry::new(exceptions::gp as *const () as u64, 0x8, 0x8e);
+    idt[14] = Entry::new(exceptions::gp as *const () as u64, 0x8, 0x8e);
+
+    let address = &idt[0] as *const _ as u64;
+
+    unsafe {
+        asm_lidt(address);
+    }
+}
+
 /// 64-bit IDT descriptor entry
 #[derive(Copy, Clone, Debug)]
+#[repr(C, packed)]
 pub struct Entry {
     offset_low: u16,
     selector: u16,
@@ -14,7 +44,7 @@ pub struct Entry {
 }
 
 impl Entry {
-    pub fn new(address: u64, selector: u16, typ_attr: u8) -> Self {
+    pub const fn new(address: u64, selector: u16, typ_attr: u8) -> Self {
         Entry {
             offset_low: (address & 0x000000000000ffff) as u16,
             selector: selector,
@@ -27,40 +57,9 @@ impl Entry {
     }
 }
 
-pub struct Idtr {
-    limit: u16,
-    address: u64,
-}
-
-pub struct Idt {
-    entries: [Entry; 256],
-}
-
-impl Idt {
-    pub fn new() -> Self {
-        Idt { entries: [Entry::new(0x0, 0x0, 0x0); 256] }
-    }
-
-    pub fn add_isr(&mut self, index: usize, isr: Entry) {
-        self.entries[index] = isr;
-    }
-
-    pub fn install(&mut self) {
-        let limit = 16 * 256 - 1;
-        let address = &self.entries[0] as *const _ as u64;
-
-        let divzero = &asm_divzero as *const _ as u64;
-        self.add_isr(0x0, Entry::new(divzero, 0x8, 0x8e));
-
-        let idtr = Idtr {
-            limit: limit,
-            address: address,
-        };
-    }
-}
 
 extern "C" {
-    fn asm_divzero();
+    // fn asm_exception();
 
-    fn asm_lidt(idtr: Idtr);
+    fn asm_lidt(idtr: u64);
 }

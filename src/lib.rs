@@ -1,6 +1,8 @@
 #![feature(lang_items)]
 #![feature(const_fn)]
 #![feature(asm)]
+#![feature(naked_functions)]
+#![feature(type_ascription)]
 #![no_std]
 
 // Multiboot crate for retrieving boot information
@@ -62,13 +64,12 @@ pub extern "C" fn kmain(mb_info_address: usize) {
     print!(" >> Initializing PIC\n");
     int::pic::remap(0x20, 0x28);
     // Temporarily mask PICs
-    io::pio::outb(0x21, 0xfd);
+    io::pio::outb(0x21, 0xff);
     io::pio::outb(0x2a, 0xff);
 
     // Initialize IDT
     print!(" >> Initializing IDT\n");
-    let mut idt = int::Idt::new();
-    idt.install();
+    int::init();
 
     loop {}
 }

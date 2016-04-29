@@ -4,23 +4,21 @@
 ;;Assembly wrappers for IDT functions.
 ;;------------------------------------------------------------------------------------------------
 
-global asm_kb_handler
 global asm_lidt
-global asm_int_test
-
-extern kb_handler
 
 section .text
 bits 64
 
-asm_divzero:
-	iretq
-
 asm_lidt:
-	lidt[rdi]
+	mov [idtr + 2], rdi
+	lidt [idtr]
 	sti
-	;int 0x0
 	ret
 
 .hang:
 	hlt
+	jmp .hang
+
+idtr:
+	dw 4095
+	dq 0

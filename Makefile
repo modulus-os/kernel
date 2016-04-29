@@ -5,8 +5,8 @@ OBJDUMP_FILE ?= target/modulus
 
 BUILD_DIR = target
 
-ASRC = $(wildcard src/asm/$(ARCH)/*.asm)
-AOBJ = $(patsubst src/asm/$(ARCH)/%.asm, target/asm/$(ARCH)/%.o, $(ASRC))
+ASRC = $(wildcard asm/$(ARCH)/*.asm)
+AOBJ = $(patsubst asm/$(ARCH)/%.asm, target/asm/$(ARCH)/%.o, $(ASRC))
 
 ASM = nasm -f elf64
 CARGO = cargo rustc --target $(TARGET) -- -Z no-landing-pads -C no-redzone
@@ -14,8 +14,11 @@ LD = ld --nmagic --gc-section -T src/$(ARCH)/linker.ld
 
 QEMU ?= -enable-kvm
 
-run: target/modulus.iso
+qemu: target/modulus.iso
 	qemu-system-x86_64 -cdrom target/modulus.iso -s -d int -no-reboot $(QEMU)
+
+bochs: target/modulus.iso
+	bochs -f bochs.x86_64 -q
 
 all: target_dir target/modulus
 
@@ -31,7 +34,7 @@ target/modulus: target_dir $(AOBJ)
 	$(CARGO)
 	$(LD) $(AOBJ) target/$(TARGET)/debug/libmodulus.a -o target/modulus
 
-target/asm/$(ARCH)/%.o: src/asm/$(ARCH)/%.asm
+target/asm/$(ARCH)/%.o: asm/$(ARCH)/%.asm
 	$(ASM) $< -o $@
 
 target/modulus.iso: target/modulus src/$(ARCH)/grub.cfg
@@ -39,8 +42,7 @@ target/modulus.iso: target/modulus src/$(ARCH)/grub.cfg
 	@cp src/$(ARCH)/grub.cfg target/iso/boot/grub
 	@cp target/modulus target/iso/boot
 	@mkdir -p target/iso/etc/default
-	@echo
-	@grub-mkrescue -o target/modulus.iso target/iso -d /usr/lib/grub/i386-pc
+	@grub-mkrescue -o target/modulus.iso target/iso > /dev/null 2>&1
 
 target_dir:
 	@mkdir -p target/asm/$(ARCH)

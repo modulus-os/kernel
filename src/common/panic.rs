@@ -6,34 +6,9 @@ extern crate core;
 
 pub fn panic(file: &str, line: u32) {
     terminal::TERM.lock().set_color(common_color::RED);
-    print!("\n\n\n\n");
-    error_symbol();
-    print!("    !PANIC!    \n\n");
+    print!("\n    !PANIC!    \n");
     terminal::TERM.lock().set_color(common_color::WHITE);
     print!("At {}:{}", file, line);
-}
-
-pub fn exception(err: &str) {
-    let mut term = terminal::Terminal::new();
-
-    term.set_color(common_color::RED);
-    print!("\n\n\n\n");
-    error_symbol();
-    print!("  !EXCEPTION!  \n\n");
-    term.set_color(common_color::WHITE);
-
-    print!("{}", err);
-}
-
-// Bare error icon
-fn error_symbol() {
-    print!("       x       \n");
-    print!("      x x      \n");
-    print!("     x | x     \n");
-    print!("    x  |  x    \n");
-    print!("   x       x   \n");
-    print!("  x    *    x  \n");
-    print!(" x===========x \n");
 }
 
 #[cfg(not(test))]

@@ -33,7 +33,7 @@ pub mod support;
 pub mod io;
 
 // Version information
-pub const VERSION: &'static str = "0.1.7";
+pub const VERSION: &'static str = "0.1.8";
 
 // Reexport x86_64 architecture components
 pub use x86_64::*;
@@ -64,7 +64,7 @@ pub extern "C" fn kmain(mb_info_address: usize) {
     print!(" >> Initializing PIC\n");
     int::pic::remap(0x20, 0x28);
     // Temporarily mask PICs
-    io::pio::outb(0x21, 0xff);
+    io::pio::outb(0x21, 0xfd);
     io::pio::outb(0x2a, 0xff);
 
     // Initialize IDT

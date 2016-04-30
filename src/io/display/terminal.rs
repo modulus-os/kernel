@@ -59,6 +59,12 @@ impl Terminal {
             self.writer.write_index(self.writer.at(i + display::VIDEO_WIDTH), i);
         }
     }
+
+    pub fn backspace(&mut self) {
+        self.writer.write_index(display::Entry::new(b' ', self.color),
+                                self.y * display::VIDEO_WIDTH + self.x - 1);
+        self.x -= 1;
+    }
 }
 
 impl fmt::Write for Terminal {
@@ -66,6 +72,7 @@ impl fmt::Write for Terminal {
         for byte in s.bytes() {
             match byte {
                 b'\n' => self.newline(),
+                b'\x08' => self.backspace(),
                 byte => {
                     self.writer.write_index(display::Entry::new(byte, self.color),
                                             self.y * display::VIDEO_WIDTH + self.x);

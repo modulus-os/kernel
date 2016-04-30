@@ -1,144 +1,151 @@
-#[no_mangle]
+/// Division By Zero; Interrupt 0
 #[naked]
-/// Divide by zero; Interrupt 0
 pub fn de() {
-    print!("Division by 0\n");
+    print!("Division By Zero\n");
+    exception_end();
 }
 
 /// Debug; Interrupt 1
-#[no_mangle]
 #[naked]
 pub fn db() {
     print!("Debug\n");
+    exception_end();
 }
 
-/// NMI; Interrupt 2
-#[no_mangle]
+/// NMI Interrupt; Interrupt 2
 #[naked]
 pub fn nmi() {
-    print!("NMI interrupt\n");
+    print!("NMI Interrupt\n");
+    exception_end();
 }
 
 /// Breakpoint; Interrupt 3
-#[no_mangle]
 #[naked]
 pub fn bp() {
     print!("Breakpoint\n");
+    exception_end();
 }
 
 /// Overflow; Interrupt 4
-#[no_mangle]
 #[naked]
 pub fn of() {
     print!("Overflow\n");
+    exception_end();
 }
 
-/// Bound; Interrupt 5
-#[no_mangle]
+/// Bound Range Exceeded; Interrupt 5
 #[naked]
 pub fn br() {
-    print!("Bound range exceeded\n");
+    print!("Bound Range Exceeded\n");
+    exception_end();
 }
 
-/// Undefined opcode; Interrupt 6
-#[no_mangle]
+/// Undefined Opcode; Interrupt 6
 #[naked]
 pub fn ud() {
-    print!("Undefined opcode\n");
+    print!("Undefined Opcode\n");
+    exception_end();
 }
 
-/// No math coprocessor; Interrupt 7
-#[no_mangle]
+/// No Math CoProcessor; Interrupt 7
 #[naked]
 pub fn nm() {
-    print!("No math coprocessor\n");
+    print!("No Math CoProcessor\n");
+    exception_end();
 }
 
-/// Double fault; Interrupt 8
-#[no_mangle]
+/// Double Fault; Interrupt 8
 #[naked]
 pub fn df() {
-    print!("Double fault\n");
+    print!("Double Fault\n");
+    exception_end();
 }
 
-/// Coprocessor segment overrun; Interrupt 9
-#[no_mangle]
+/// CoProcessor Segment Overrun; Interrupt 9
 #[naked]
 pub fn cmf() {
-    print!("Coprocessor segment overrun\n");
+    print!("CoProcessor Segment Overrun\n");
+    exception_end();
 }
 
 /// Invalid TSS; Interrupt 10
-#[no_mangle]
 #[naked]
 pub fn ts() {
     print!("Invalid TSS\n");
+    exception_end();
 }
 
-/// Segment not present; Interrupt 11
-#[no_mangle]
+/// Segment Not Present; Interrupt 11
 #[naked]
 pub fn np() {
-    print!("Segment not present\n");
+    print!("Segment Not Present\n");
+    exception_end();
 }
 
-/// Stack segment fault; Interrupt 12
-#[no_mangle]
+/// Stack Segment Fault; Interrupt 12
 #[naked]
 pub fn ss() {
-    print!("Stack segment fault\n");
+    print!("Stack Segment Fault\n");
+    exception_end();
 }
 
-/// General protection fault; Interrupt 13
-#[no_mangle]
+/// General Protection Fault; Interrupt 13
 #[naked]
 pub fn gp() {
-    print!("General protection fault\n");
+    print!("General Protection Fault\n");
+    exception_end();
 }
 
-/// Page fault; Interrupt 14
-#[no_mangle]
+/// Page Fault; Interrupt 14
 #[naked]
 pub fn pf() {
-    print!("Page fault\n");
+    print!("Page Fault\n");
+    exception_end();
 }
 
 // Interrupt 15 is reserved
 
 
-/// Floating-point error (math fault); Interrupt 16
-#[no_mangle]
+/// Floating-point Error (Math Fault); Interrupt 16
 #[naked]
 pub fn mf() {
-    print!("Floating-point error (math fault)\n");
+    print!("Floating-point Error (Math Fault)\n");
+    exception_end();
 }
 
-/// Alignment check; Interrupt 17
-#[no_mangle]
+/// Alignment Check; Interrupt 17
 #[naked]
 pub fn ac() {
-    print!("Alignment check\n");
+    print!("Alignment Check\n");
+    exception_end();
 }
 
-/// Machine check; Interrupt 18
-#[no_mangle]
+/// Machine Check; Interrupt 18
 #[naked]
 pub fn mc() {
-    print!("Machine check\n");
+    print!("Machine Check\n");
+    exception_end();
 }
 
-/// SIMD floating-point exception; Interrupt 19
-#[no_mangle]
+/// SIMD Floating-point Exception; Interrupt 19
 #[naked]
 pub fn xm() {
-    print!("SIMD floating-point exception\n");
+    print!("SIMD Floating-point Exception\n");
+    exception_end();
 }
 
-/// Virtualization exception; Interrupt 20
-#[no_mangle]
+/// Virtualization Exception; Interrupt 20
 #[naked]
 pub fn ve() {
-    print!("Virtualization exception\n");
+    print!("Virtualization Exception\n");
+    exception_end();
 }
 
 // Interrupts 21-31 are reserved
+
+/// Halt system
+pub fn exception_end() {
+    unsafe {
+        asm!("hlt");
+    }
+}

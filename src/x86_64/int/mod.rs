@@ -1,6 +1,9 @@
 /// Defines exception handlers
 pub mod exceptions;
 
+/// Defines ISRs
+pub mod isrs;
+
 /// PIC functions
 pub mod pic;
 
@@ -21,7 +24,17 @@ pub fn init() {
     idt[11] = Entry::new(exceptions::np as *const () as u64, 0x8, 0x8e);
     idt[12] = Entry::new(exceptions::ss as *const () as u64, 0x8, 0x8e);
     idt[13] = Entry::new(exceptions::gp as *const () as u64, 0x8, 0x8e);
-    idt[14] = Entry::new(exceptions::gp as *const () as u64, 0x8, 0x8e);
+    idt[14] = Entry::new(exceptions::pf as *const () as u64, 0x8, 0x8e);
+    // Interrupt 15 is reserved
+    idt[16] = Entry::new(exceptions::mf as *const () as u64, 0x8, 0x8e);
+    idt[17] = Entry::new(exceptions::ac as *const () as u64, 0x8, 0x8e);
+    idt[18] = Entry::new(exceptions::mc as *const () as u64, 0x8, 0x8e);
+    idt[19] = Entry::new(exceptions::xm as *const () as u64, 0x8, 0x8e);
+    idt[20] = Entry::new(exceptions::ve as *const () as u64, 0x8, 0x8e);
+
+    idt[0x21] = Entry::new(asm_kb as *const () as u64, 0x8, 0x8e);
+
+    idt[0x80] = Entry::new(asm_sys as *const () as u64, 0x8, 0x8e);
 
     let address = &idt[0] as *const _ as u64;
 
@@ -59,7 +72,7 @@ impl Entry {
 
 
 extern "C" {
-    // fn asm_exception();
-
+    fn asm_sys();
+    fn asm_kb();
     fn asm_lidt(idtr: u64);
 }

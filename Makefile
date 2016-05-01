@@ -1,5 +1,6 @@
-ARCH = x86_64
-TARGET = $(ARCH)-unknown-linux-gnu
+ARCH = x64
+ARCH_FULL = x86_64
+TARGET = $(ARCH_FULL)-unknown-linux-gnu
 
 OBJDUMP_FILE ?= target/modulus
 

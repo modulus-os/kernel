@@ -1,5 +1,5 @@
 ;;------------------------------------------------------------------------------------------------
-;;`arch/x86_64/interrupt_handlers.asm`
+;;`arch/x64/interrupt_handlers.asm`
 ;;
 ;;Assembly wrappers for IDT functions.
 ;;------------------------------------------------------------------------------------------------
@@ -7,9 +7,11 @@
 global asm_lidt
 
 global asm_sys
+global asm_pit
 global asm_kb
 
 extern sys
+extern pit
 extern kb
 
 section .text
@@ -27,6 +29,10 @@ idtr:
 
 asm_sys:
 	mov qword [temp], sys
+	jmp isr_stub
+
+asm_pit:
+	mov qword [temp], pit
 	jmp isr_stub
 
 asm_kb:

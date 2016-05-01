@@ -1,6 +1,7 @@
 #![macro_use]
 
 use io::display;
+use io::pio::*;
 use core::fmt;
 use spin::Mutex;
 
@@ -55,7 +56,7 @@ impl Terminal {
     }
 
     pub fn scroll(&mut self) {
-        for i in 0..(display::VIDEO_WIDTH * display::VIDEO_HEIGHT) {
+        for i in 0..(display::VIDEO_WIDTH * (display::VIDEO_HEIGHT - 1)) {
             self.writer.write_index(self.writer.at(i + display::VIDEO_WIDTH), i);
         }
     }
@@ -63,7 +64,21 @@ impl Terminal {
     pub fn backspace(&mut self) {
         self.writer.write_index(display::Entry::new(b' ', self.color),
                                 self.y * display::VIDEO_WIDTH + self.x - 1);
-        self.x -= 1;
+        if self.x == 0 {
+            self.y -= 1;
+            self.x = display::VIDEO_WIDTH;
+        } else {
+            self.x -= 1;
+        }
+    }
+
+    pub fn update_cursor(&self) {
+        let pos: u16 = self.y as u16 * display::VIDEO_WIDTH as u16 + self.x as u16;
+        outb(0x3d4, 0x0f);
+        outb(0x3d5, pos as u8 & 0xff);
+
+        outb(0x3d4, 0x0e);
+        outb(0x3d5, (pos >> 8) as u8 & 0xff);
     }
 }
 
@@ -80,6 +95,7 @@ impl fmt::Write for Terminal {
                 }
             }
         }
+        self.update_cursor();
         Ok(())
     }
 }

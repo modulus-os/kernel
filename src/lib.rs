@@ -16,12 +16,9 @@ extern crate spin;
 pub mod macros;
 /// x86_64 specific code
 ///
-/// This module contains code specific to the x86_64 architecture such as MM, interrupts, etc.
-pub mod x86_64;
-/// Common functions
-///
-/// Contains common kernel functions such as power management and panic handling.
-pub mod common;
+/// This module contains code specific to the x86_64 architecture such as
+/// memory management, interrupts, etc.
+pub mod x64;
 /// Standard support library
 ///
 /// Contains memory manipulation functions such as memcpy, memmove, memset, and memcmp.
@@ -31,18 +28,24 @@ pub mod support;
 ///
 /// Includes Port I/O and display drivers.
 pub mod io;
+/// Current environment information
+///
+/// Contains information such as system time, current thread, etc.
+pub mod env;
+/// Rust panic_fmt function
+pub mod panic;
 
 // Version information
 pub const VERSION: &'static str = "0.1.8";
 
-// Reexport x86_64 architecture components
-pub use x86_64::*;
+// Reexport x64 architecture components
+pub use x64::*;
 
 use io::display::*;
 
 /// Kernel main
 ///
-/// This is the main kernel entry point. It is called by `src/asm/x86_64/lm_start.asm`.
+/// This is the main kernel entry point. It is called by `src/asm/x64/lm_start.asm`.
 /// This function initializes the kernel.
 #[no_mangle]
 pub extern "C" fn kmain(mb_info_address: usize) {
@@ -64,12 +67,16 @@ pub extern "C" fn kmain(mb_info_address: usize) {
     print!(" >> Initializing PIC\n");
     int::pic::remap(0x20, 0x28);
     // Temporarily mask PICs
-    io::pio::outb(0x21, 0xfd);
+    io::pio::outb(0x21, 0xfc);
     io::pio::outb(0x2a, 0xff);
 
     // Initialize IDT
     print!(" >> Initializing IDT\n");
     int::init();
+
+    // Initialize PIT
+    print!(" >> Initializing PIT\n");
+    env::time::init();
 
     loop {}
 }

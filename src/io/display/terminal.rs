@@ -56,9 +56,11 @@ impl Terminal {
     }
 
     pub fn scroll(&mut self) {
-        for i in 0..(display::VIDEO_WIDTH * (display::VIDEO_HEIGHT - 1)) {
-            self.writer.write_index(self.writer.at(i + display::VIDEO_WIDTH), i);
-        }
+        self.x = 0;
+        self.y = 0;
+        // for i in 0..(display::VIDEO_WIDTH * (display::VIDEO_HEIGHT - 1)) {
+        // self.writer.write_index(self.writer.at(i + display::VIDEO_WIDTH), i);
+        // }
     }
 
     pub fn backspace(&mut self) {

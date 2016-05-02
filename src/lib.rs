@@ -2,7 +2,6 @@
 #![feature(const_fn)]
 #![feature(asm)]
 #![feature(naked_functions)]
-#![feature(type_ascription)]
 #![no_std]
 
 // Multiboot crate for retrieving boot information
@@ -32,6 +31,10 @@ pub mod io;
 ///
 /// Contains information such as system time, current thread, etc.
 pub mod env;
+/// Disk drivers
+///
+/// Drivers for reading and writing from storage devices.
+pub mod disk;
 /// Rust panic_fmt function
 pub mod panic;
 
@@ -42,7 +45,6 @@ pub const VERSION: &'static str = "0.1.8";
 pub use x64::*;
 
 use io::display::*;
-
 /// Kernel main
 ///
 /// This is the main kernel entry point. It is called by `src/asm/x64/lm_start.asm`.
@@ -74,9 +76,27 @@ pub extern "C" fn kmain(mb_info_address: usize) {
     print!(" >> Initializing IDT\n");
     int::init();
 
+    env::time::init();
     // Initialize PIT
     print!(" >> Initializing PIT\n");
-    env::time::init();
+
+    terminal::TERM.lock().set_color(common_color::GREEN);
+    print!("\nStartup time: {}ms\n", env::time::ms());
+    terminal::TERM.lock().set_color(common_color::WHITE);
+
+    let disk = match disk::ata::Ata::new(0x1f0, false) {
+        Some(disk) => disk,
+        None => disk::ata::Ata::new(0x1f0, true).expect("No disk"),
+    };
+
+    let buffer = 0xffffff as *mut u16;
+
+    unsafe {
+        *buffer = 0x20;
+    }
+
+    // disk.write48(0, 1, buffer);
+    disk.read48(0, 1, buffer);
 
     loop {}
 }

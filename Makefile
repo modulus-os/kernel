@@ -16,7 +16,7 @@ LD = ld --nmagic --gc-section -T src/$(ARCH)/linker.ld
 QEMU ?= -enable-kvm
 
 qemu: target/modulus.iso
-	qemu-system-x86_64 -cdrom target/modulus.iso -s -d int -no-reboot $(QEMU)
+	qemu-system-x86_64 -hda target/modulus.iso -s -d int -no-reboot $(QEMU)
 
 bochs: target/modulus.iso
 	bochs -f bochs.x86_64 -q

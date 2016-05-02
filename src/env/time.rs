@@ -11,10 +11,12 @@ pub fn init() {
     outb(0x40, (divisor >> 8) as u8);
 }
 
-pub fn ticks() -> usize {
+/// Returns current system uptime in milliseconds
+pub fn ms() -> usize {
     *CLOCK.lock()
 }
 
+/// Returns current system uptime in seconds
 pub fn seconds() -> usize {
     *CLOCK.lock() / 1000
 }

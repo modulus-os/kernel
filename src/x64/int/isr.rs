@@ -34,6 +34,24 @@ pub fn kb() {
 
 }
 
+#[no_mangle]
+pub fn primary_ata() {
+    // EOI
+    outb(0x20, 0x20);
+    outb(0xa0, 0x20);
+
+    print!("Primary ATA");
+}
+
+#[no_mangle]
+pub fn secondary_ata() {
+    // EOI
+    outb(0x20, 0x20);
+    outb(0xa0, 0x20);
+
+    print!("Secondary ATA");
+}
+
 /// US keyboard layout
 /// Modified version of layout found here: http://www.osdever.net/bkerndev/Docs/keyboard.htm
 /// The escaped "x09" represents a null character and is ignored.

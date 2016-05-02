@@ -10,7 +10,7 @@ pub fn outb(port: u16, value: u8) {
 }
 
 #[cfg_attr(rustfmt, rustfmt_skip)]
-pub fn outw(port: u16, value: u8) {
+pub fn outw(port: u16, value: u16) {
 	unsafe{
 		asm!("outw %ax, %dx"
 			:
@@ -21,7 +21,7 @@ pub fn outw(port: u16, value: u8) {
 }
 
 #[cfg_attr(rustfmt, rustfmt_skip)]
-pub fn outl(port: u16, value: u8) {
+pub fn outl(port: u16, value: u32) {
 	unsafe{
 		asm!("outl %eax, %dx"
 			:

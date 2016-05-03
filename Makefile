@@ -15,11 +15,11 @@ LD = ld --nmagic --gc-section -T src/$(ARCH)/linker.ld
 
 QEMU ?= -enable-kvm
 
-qemu: target/modulus.iso
-	qemu-system-x86_64 -hda target/modulus.iso -s -d int -no-reboot $(QEMU)
-
 bochs: target/modulus.iso
 	bochs -f bochs.x86_64 -q
+
+qemu: target/modulus.iso
+	qemu-system-x86_64 -hdb target/modulus.iso -s -d int -no-reboot $(QEMU)
 
 all: target_dir target/modulus
 
@@ -42,7 +42,7 @@ target/modulus.iso: target/modulus src/$(ARCH)/grub.cfg
 	@mkdir -p target/iso/boot/grub
 	@cp src/$(ARCH)/grub.cfg target/iso/boot/grub
 	@cp target/modulus target/iso/boot
-	@mkdir -p target/iso/etc/default
+	@cp -r filesystem/* target/iso
 	@grub-mkrescue -o target/modulus.iso target/iso > /dev/null 2>&1
 
 target_dir:

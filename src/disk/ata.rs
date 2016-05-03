@@ -11,8 +11,87 @@ pub struct Ata {
 }
 
 impl Disk for Ata {
-    fn read(&self, lba: u64, count: u8, buffer: *mut u16) {
-        self.read28(lba as u32, count, buffer);
+    /// Read 48
+    ///
+    /// Read from disk using a 48-bit LBA (address) and write contents into buffer
+    fn read(&self, block: u64, count: u16, buffer: *mut u16) {
+        let selector;
+        if self.slave {
+            selector = 0x50;
+        } else {
+            selector = 0x40;
+        }
+
+        outb(self.base + SELECTOR, selector);
+        outb(self.base + 1, 0);
+
+        self.lba48(block, count);
+
+        // Send READ SECTORS EXT command
+        outb(self.base + COMMAND, 0x24);
+
+        // Read a each sector
+        for c in 0..count {
+            // Poll until ready
+            while !self.poll() {}
+
+            // Read sector
+            for i in 0..256 {
+                let data = inw(self.base + DATA);
+                unsafe {
+                    *buffer.offset((c as isize * 256) + i as isize) = data;
+                }
+            }
+
+            // 400ns delay
+            self.delay_400ns();
+        }
+    }
+
+    /// Write 48
+    ///
+    /// Write contents of buffer to disk using a 48-bit LBA (address)
+    fn write(&self, block: u64, count: u16, buffer: *mut u16) {
+        let selector;
+        if self.slave {
+            selector = 0x50;
+        } else {
+            selector = 0x40;
+        }
+
+        outb(self.base + SELECTOR, selector);
+        outb(self.base + 1, 0);
+
+        self.lba48(block, count);
+
+        // Send WRITE SECTORS EXT command
+        outb(self.base + COMMAND, 0x34);
+
+        for i in 0..count {
+            // Poll until ready
+            while !self.poll() {}
+
+            // Write
+            for j in 0..256 {
+                outw(self.base + DATA,
+                     unsafe { *buffer.offset((i as isize * 256) + j) });
+                // for _ in 0..1000 {}
+            }
+
+            // 400ns delay
+            self.delay_400ns();
+
+            // Cache flush
+            outb(self.base + COMMAND, 0xe7);
+        }
+
+        let mut status = inb(self.base + COMMAND);
+        while (status & 0b10000000) != 0 {
+            status = inb(self.base + COMMAND);
+        }
+        while (status & 0b00001000) == 0 {
+            status = inb(self.base + COMMAND);
+        }
     }
 }
 
@@ -35,11 +114,7 @@ impl Ata {
 
     /// IDENTIFY command
     ///
-    /// Returns info about a drive.
-    /// If the "secondary" parameter is true, the secondary bus will be used. Otherwise,
-    /// the primary bus will be used.
-    /// If the "slave" parameter is true, the slave drive will be selected. Otherwise, the
-    /// master will be selected.
+    /// Returns information about a drive if it exists.
     pub fn identify(&self) -> Option<u8> {
         let command = self.base + COMMAND;
         let selector = self.base + SELECTOR;
@@ -131,106 +206,7 @@ impl Ata {
         }
     }
 
-    pub fn read48(&self, lba: u64, count: u16, buffer: *mut u16) {
-        let selector;
-        if self.slave {
-            selector = 0x50;
-        } else {
-            selector = 0x40;
-        }
-
-        outb(self.base + SELECTOR, selector);
-        outb(self.base + 1, 0);
-
-        self.lba48(lba, count);
-
-        // Send READ SECTORS EXT command
-        outb(self.base + COMMAND, 0x24);
-
-        // A count of 0 is special and means 65535
-        let real_count;
-        if count == 0 {
-            real_count = 65535;
-        } else {
-            real_count = count;
-        }
-
-        for _ in 0..real_count {
-            // Wait until BSY is cleared
-            let mut status = inb(self.base + COMMAND);
-            while (status & 0b10000000) != 0 {
-                status = inb(self.base + COMMAND);
-            }
-            while (status & 0b00001000) == 0 {
-                status = inb(self.base + COMMAND);
-            }
-
-            // Read sector
-            for i in 0..256 {
-                let data = inw(self.base + DATA);
-                unsafe {
-                    *buffer.offset(i) = data;
-                }
-                print!("{:0x}", data);
-            }
-        }
-    }
-
-    pub fn write48(&self, lba: u64, count: u16, buffer: *mut u16) {
-        let selector;
-        if self.slave {
-            selector = 0x50;
-        } else {
-            selector = 0x40;
-        }
-
-        outb(self.base + SELECTOR, selector);
-        outb(self.base + 1, 0);
-
-        self.lba48(lba, count);
-
-        // Send WRITE SECTORS EXT command
-        outb(self.base + COMMAND, 0x34);
-
-        // A count of 0 is special and means 65535
-        let real_count;
-        if count == 0 {
-            real_count = 65535;
-        } else {
-            real_count = count;
-        }
-
-        for i in 0..real_count {
-            // Wait until BSY is cleared
-            let mut status = inb(self.base + COMMAND);
-            while (status & 0b10000000) != 0 {
-                status = inb(self.base + COMMAND);
-            }
-            while (status & 0b00001000) == 0 {
-                status = inb(self.base + COMMAND);
-            }
-
-            // Write
-            for j in 0..256 {
-                outw(self.base + DATA,
-                     unsafe { *buffer.offset((i as isize * 256) + j) });
-                for _ in 0..100000 {}
-            }
-        }
-
-        // Cache flush
-        outb(self.base + COMMAND, 0xe7);
-
-        let mut status = inb(self.base + COMMAND);
-        while (status & 0b10000000) != 0 {
-            status = inb(self.base + COMMAND);
-        }
-        while (status & 0b00001000) == 0 {
-            status = inb(self.base + COMMAND);
-        }
-    }
-
-    pub fn lba48(&self, lba: u64, count: u16) {
+    fn lba48(&self, lba: u64, count: u16) {
         let lba1 = (lba & 0x0000000000ff) as u8;
         let lba2 = ((lba & 0x00000000ff00) >> 8) as u8;
         let lba3 = ((lba & 0x000000ff0000) >> 16) as u8;
@@ -247,5 +223,25 @@ impl Ata {
         outb(self.base + 3, lba1);
         outb(self.base + 4, lba2);
         outb(self.base + 5, lba3);
+    }
+
+    fn delay_400ns(&self) {
+        for _ in 0..4 {
+            inb(self.base + 0x200 + 0x6);
+        }
+    }
+
+    /// Returns true if device is ready
+    fn poll(&self) -> bool {
+        let status = inb(self.base + COMMAND);
+        if status & 0b10000000 == 0 {
+            if status & 0b00001000 != 0 || status & 0b00100001 != 0 {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
     }
 }

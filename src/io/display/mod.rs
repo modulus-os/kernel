@@ -1,9 +1,6 @@
 /// Terminal functionality built upon core VGA driver
 pub mod terminal;
 
-/// Commonly used colors
-pub mod common_color;
-
 pub const VIDEO_WIDTH: usize = 80;
 pub const VIDEO_HEIGHT: usize = 25;
 
@@ -27,6 +24,11 @@ pub enum Color {
     Yellow = 14,
     White = 15,
 }
+
+pub const WHITE: u8 = Color::new(Color::White, Color::Black);
+pub const GREEN: u8 = Color::new(Color::Green, Color::Black);
+pub const RED: u8 = Color::new(Color::Red, Color::Black);
+pub const LCYAN: u8 = Color::new(Color::LightCyan, Color::Black);
 
 impl Color {
     pub const fn new(fg: Color, bg: Color) -> u8 {

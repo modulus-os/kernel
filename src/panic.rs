@@ -5,9 +5,9 @@ use io::display::*;
 extern crate core;
 
 pub fn panic(file: &str, line: u32) {
-    terminal::TERM.lock().set_color(common_color::RED);
+    terminal::TERM.lock().set_color(RED);
     print!("\n    !PANIC!    \n");
-    terminal::TERM.lock().set_color(common_color::WHITE);
+    terminal::TERM.lock().set_color(WHITE);
     print!("At {}:{}", file, line);
 }
 

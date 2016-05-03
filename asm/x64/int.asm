@@ -12,6 +12,8 @@ global asm_kb
 global asm_primary_ata
 global asm_secondary_ata
 
+global asm_buffer
+
 extern sys
 extern pit
 extern kb
@@ -81,3 +83,8 @@ isr_stub:
 
 temp:
 	dq 0
+
+section .bss
+asm_buffer:
+	resw 256
+	resw 256

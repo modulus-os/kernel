@@ -4,10 +4,10 @@
 #![feature(naked_functions)]
 #![no_std]
 
-// Multiboot crate for retrieving boot information
+/// Multiboot crate for retrieving boot information
 extern crate multiboot2;
 
-// Spinlock crate
+/// Spinlock crate
 extern crate spin;
 
 #[macro_use]
@@ -35,16 +35,21 @@ pub mod env;
 ///
 /// Drivers for reading and writing from storage devices.
 pub mod disk;
+/// VFS and filesystem drivers
+///
+/// Virtual file system abstraction and filesystem drivers
+pub mod fs;
 /// Rust panic_fmt function
 pub mod panic;
 
-// Version information
+/// Version information
 pub const VERSION: &'static str = "0.1.8";
 
-// Reexport x64 architecture components
+/// Reexport x64 architecture components
 pub use x64::*;
 
 use io::display::*;
+
 /// Kernel main
 ///
 /// This is the main kernel entry point. It is called by `src/asm/x64/lm_start.asm`.
@@ -56,13 +61,14 @@ pub extern "C" fn kmain(mb_info_address: usize) {
     terminal::TERM.lock().clear();
 
     // Display version information
-    terminal::TERM.lock().set_color(common_color::GREEN);
+    terminal::TERM.lock().set_color(GREEN);
     print!("Modulus ");
-    terminal::TERM.lock().set_color(common_color::WHITE);
+    terminal::TERM.lock().set_color(WHITE);
     print!("{}\n\n", VERSION);
 
     // Initialize frame allocation
     print!(" >> Initializing memory management\n");
+
     let alloc = memory::init_area_frame_alloc(mb_info_address);
 
     // Initialize PIC
@@ -80,23 +86,22 @@ pub extern "C" fn kmain(mb_info_address: usize) {
     // Initialize PIT
     print!(" >> Initializing PIT\n");
 
-    terminal::TERM.lock().set_color(common_color::GREEN);
+    terminal::TERM.lock().set_color(GREEN);
     print!("\nStartup time: {}ms\n", env::time::ms());
-    terminal::TERM.lock().set_color(common_color::WHITE);
+    terminal::TERM.lock().set_color(WHITE);
 
     let disk = match disk::ata::Ata::new(0x1f0, false) {
         Some(disk) => disk,
         None => disk::ata::Ata::new(0x1f0, true).expect("No disk"),
     };
 
-    let buffer = 0xffffff as *mut u16;
+    let fs = fs::iso9660::Iso9660::new(disk, 0x40);
 
-    unsafe {
-        *buffer = 0x20;
+    if fs.is_some() {
+        print!("ISO9660 filesystem");
+    } else {
+        print!("Not an ISO9660 filesystem");
     }
-
-    // disk.write48(0, 1, buffer);
-    disk.read48(0, 1, buffer);
 
     loop {}
 }

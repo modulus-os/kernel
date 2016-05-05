@@ -83,8 +83,3 @@ isr_stub:
 
 temp:
 	dq 0
-
-section .bss
-asm_buffer:
-	resw 256
-	resw 256

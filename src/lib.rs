@@ -95,13 +95,9 @@ pub extern "C" fn kmain(mb_info_address: usize) {
         None => disk::ata::Ata::new(0x1f0, true).expect("No disk"),
     };
 
-    let fs = fs::iso9660::Iso9660::new(disk, 0x40);
+    let fs = fs::iso9660::Iso9660::new(disk, 0x40).expect("Not an ISO9660 filesystem");
 
-    if fs.is_some() {
-        print!("ISO9660 filesystem");
-    } else {
-        print!("Not an ISO9660 filesystem");
-    }
+    fs.read_root();
 
     loop {}
 }

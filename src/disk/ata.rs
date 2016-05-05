@@ -14,7 +14,7 @@ impl Disk for Ata {
     /// Read 48
     ///
     /// Read from disk using a 48-bit LBA (address) and write contents into buffer
-    fn read(&self, block: u64, count: u16, buffer: *mut u16) {
+    fn read(&self, block: u64, count: u16, buffer: &mut [u8]) {
         let selector;
         if self.slave {
             selector = 0x50;
@@ -38,8 +38,9 @@ impl Disk for Ata {
             // Read sector
             for i in 0..256 {
                 let data = inw(self.base + DATA);
-                unsafe {
-                    *buffer.offset((c as isize * 256) + i as isize) = data;
+                if buffer.len() >= (c as usize * 256) {
+                    buffer[i * 2 + (c as usize * 256)] = data as u8;
+                    buffer[i * 2 + 1 + (c as usize * 256)] = (data >> 8) as u8;
                 }
             }
 
@@ -51,7 +52,7 @@ impl Disk for Ata {
     /// Write 48
     ///
     /// Write contents of buffer to disk using a 48-bit LBA (address)
-    fn write(&self, block: u64, count: u16, buffer: *mut u16) {
+    fn write(&self, block: u64, count: u16, buffer: &[u8]) {
         let selector;
         if self.slave {
             selector = 0x50;
@@ -67,15 +68,15 @@ impl Disk for Ata {
         // Send WRITE SECTORS EXT command
         outb(self.base + COMMAND, 0x34);
 
-        for i in 0..count {
+        for c in 0..count {
             // Poll until ready
             while !self.poll() {}
 
             // Write
-            for j in 0..256 {
+            for i in 0..256 {
                 outw(self.base + DATA,
-                     unsafe { *buffer.offset((i as isize * 256) + j) });
-                // for _ in 0..1000 {}
+                     (buffer[i + (c as usize * 256)] as u16) << 8 |
+                     buffer[i + 1 + (c as usize * 256)] as u16);
             }
 
             // 400ns delay

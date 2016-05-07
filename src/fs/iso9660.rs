@@ -5,15 +5,22 @@ pub struct Iso9660<T: Disk> {
     pvd: [u8; 2048],
 }
 
-impl<T: Disk> Iso9660<T> {
-    pub fn new(disk: T, vd_block: u64) -> Option<Self> {
-        let mut buffer: [u8; 2048] = [0; 2048];
-        disk.read(vd_block, 1, &mut buffer);
+pub struct PathEntry {
+    len: u8,
+    earl: u8,
+    location: u32,
+    num_parents: u16,
+}
 
-        let id = unsafe { *(&buffer as *const u8 as *const u64) };
+impl<T: Disk> Iso9660<T> {
+    pub fn new(disk: T) -> Option<Self> {
+        let mut buffer = [0u8; 2048];
+        disk.read(0x40, 1, &mut buffer);
+
+        let id = unsafe { *(&buffer as *const u8 as *const u64) } & 0xffffffffff00;
 
         // Check for 'CD001' identifier
-        if id & 0xffffffffff00 == 0x313030444300 {
+        if id == 0x313030444300 {
             return Some(Iso9660 {
                 disk: disk,
                 pvd: buffer,
@@ -23,7 +30,16 @@ impl<T: Disk> Iso9660<T> {
         }
     }
 
-    pub fn read_root(&self) {
-        print!("{:0x}\n", self.pvd[1]);
+    pub fn find(&self) {
+        let lpt = 132;
+        let location = (self.pvd[lpt + 3] as u32) << 24 | (self.pvd[lpt + 2] as u32) << 16 |
+                       (self.pvd[lpt + 1] as u32) << 8 |
+                       (self.pvd[lpt] as u32);
+        print!("{}", location);
+
+        // let mut buffer = [0u8; 512];
+        // self.disk.read(location as u64, 1, &mut buffer);
+
+        // print!("Buffer: {}", buffer[0]);
     }
 }

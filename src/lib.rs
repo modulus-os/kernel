@@ -49,6 +49,7 @@ pub const VERSION: &'static str = "0.1.8";
 pub use x64::*;
 
 use io::display::*;
+use disk::Disk;
 
 /// Kernel main
 ///
@@ -92,12 +93,11 @@ pub extern "C" fn kmain(mb_info_address: usize) {
 
     let disk = match disk::ata::Ata::new(0x1f0, false) {
         Some(disk) => disk,
-        None => disk::ata::Ata::new(0x1f0, true).expect("No disk"),
+        None => disk::ata::Ata::new(0x1f0, true).unwrap(),
     };
 
-    let fs = fs::iso9660::Iso9660::new(disk, 0x40).expect("Not an ISO9660 filesystem");
-
-    fs.read_root();
+    let fs = fs::iso9660::Iso9660::new(disk).expect("Not an ISO9660 filesystem");
+    fs.find();
 
     loop {}
 }

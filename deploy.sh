@@ -1,5 +1,5 @@
 git clone https://github.com/modulus-os/modulus-os.github.io.git
-make doc-kernel
+cargo doc
 cd modulus-os.github.io
 rm -rf doc
 cp -r ../target/doc .

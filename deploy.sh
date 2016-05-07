@@ -7,4 +7,4 @@ git config user.name "DocBot"
 git config user.email "epicpotatopro@gmail.com"
 git add .
 git commit -m "Docs"
-git push -u origin master
+git push

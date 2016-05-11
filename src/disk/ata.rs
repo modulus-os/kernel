@@ -47,6 +47,7 @@ impl Disk for Ata {
             // 400ns delay
             self.delay_400ns();
         }
+
     }
 
     /// Write 48
@@ -106,6 +107,10 @@ impl Ata {
         // Make sure that disk exists
         let identity = disk.identify();
 
+        // BUG: This initial read required on some emulators such as QEMU
+        let mut buffer = [0u8; 512];
+        disk.read(0x40, 1, &mut buffer);
+
         if identity.is_none() {
             None
         } else {
@@ -154,9 +159,9 @@ impl Ata {
                 return None;
             }
 
-            while (status & 0b00001111) == 0 {
-                status = inb(command);
-            }
+            // while (status & 0b00001111) == 0 {
+            //    status = inb(command);
+            // }
 
             // Check if ERR is set
             if (status & 0b00000111) != 0 {
@@ -235,14 +240,11 @@ impl Ata {
     /// Returns true if device is ready
     fn poll(&self) -> bool {
         let status = inb(self.base + COMMAND);
-        if status & 0b10000000 == 0 {
-            if status & 0b00001000 != 0 || status & 0b00100001 != 0 {
-                return true;
-            } else {
-                return false;
-            }
-        } else {
+
+        if status & 0x80 == 0x80 {
             return false;
+        } else {
+            return true;
         }
     }
 }

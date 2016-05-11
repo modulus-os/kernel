@@ -9,10 +9,14 @@ global asm_lidt
 global asm_sys
 global asm_pit
 global asm_kb
+global asm_primary_ata
+global asm_secondary_ata
 
 extern sys
 extern pit
 extern kb
+extern primary_ata
+extern secondary_ata
 
 section .text
 bits 64
@@ -33,6 +37,14 @@ asm_sys:
 
 asm_pit:
 	mov qword [temp], pit
+	jmp isr_stub
+
+asm_primary_ata:
+	mov qword [temp], primary_ata
+	jmp isr_stub
+
+asm_secondary_ata:
+	mov qword [temp], secondary_ata
 	jmp isr_stub
 
 asm_kb:

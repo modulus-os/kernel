@@ -19,7 +19,6 @@ pub fn kb() {
     // EOI
     outb(0x20, 0x20);
 
-
     let mut scancode = 0;
 
     while scancode < 1 {

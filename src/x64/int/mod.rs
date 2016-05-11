@@ -34,6 +34,8 @@ pub fn init() {
 
     idt[32] = Entry::new(asm_pit as *const () as u64, 0x8, 0x8e);
     idt[33] = Entry::new(asm_kb as *const () as u64, 0x8, 0x8e);
+    idt[32 + 14] = Entry::new(asm_primary_ata as *const () as u64, 0x8, 0x8e);
+    idt[32 + 15] = Entry::new(asm_secondary_ata as *const () as u64, 0x8, 0x8e);
 
     idt[0x80] = Entry::new(asm_sys as *const () as u64, 0x8, 0x8e);
 
@@ -76,5 +78,8 @@ extern "C" {
     fn asm_sys();
     fn asm_pit();
     fn asm_kb();
+    fn asm_primary_ata();
+    fn asm_secondary_ata();
+
     fn asm_lidt(idtr: u64);
 }

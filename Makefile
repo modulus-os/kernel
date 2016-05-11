@@ -13,11 +13,13 @@ ASM = nasm -f elf64
 CARGO = cargo rustc --target $(TARGET) -- -Z no-landing-pads -C no-redzone
 LD = ld --nmagic --gc-section -T src/$(ARCH)/linker.ld
 
-bochs: target/modulus.iso
-	bochs -f bochs.x86_64 -q
+QEMU ?= -enable-kvm
 
 qemu: target/modulus.iso
 	qemu-system-x86_64 -hda target/modulus.iso -s -d int -no-reboot $(QEMU)
+
+bochs: target/modulus.iso
+	bochs -f bochs.x86_64 -q
 
 all: target_dir target/modulus
 

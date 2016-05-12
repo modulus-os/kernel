@@ -1,13 +1,60 @@
 use io::pio::*;
 use disk::Disk;
 
-const COMMAND: u16 = 0x7;
-const SELECTOR: u16 = 0x6;
 const DATA: u16 = 0x0;
+const SECTOR_COUNT: u16 = 0x2;
+const LBA_LOW: u16 = 0x3;
+const LBA_MID: u16 = 0x4;
+const LBA_HIGH: u16 = 0x5;
+const SELECTOR: u16 = 0x6;
+const COMMAND: u16 = 0x7;
 
 pub struct Ata {
     base: u16,
     pub slave: bool,
+}
+
+pub fn list() {
+    let pm = Ata::new(0x1f0, false).identify();
+    let ps = Ata::new(0x1f0, true).identify();
+
+    print!("Primary Master: \n");
+    if let Some(info) = pm {
+        print!("   Serial: ");
+        for i in 20..40 {
+            print!("{}", info[i] as char);
+        }
+        print!("\n   Firmware: ");
+        for i in 46..54 {
+            print!("{}", info[i] as char);
+        }
+        print!("\n   Model: ");
+        for i in 54..94 {
+            print!("{}", info[i] as char);
+        }
+        print!("\n");
+    } else {
+        print!("   No disk found\n");
+    }
+
+    print!("Primary Slave: \n");
+    if let Some(info) = ps {
+        print!("   Serial: ");
+        for i in 20..40 {
+            print!("{}", info[i] as char);
+        }
+        print!("\n   Firmware: ");
+        for i in 46..54 {
+            print!("{}", info[i] as char);
+        }
+        print!("\n   Model: ");
+        for i in 54..94 {
+            print!("{}", info[i] as char);
+        }
+        print!("\n");
+    } else {
+        print!("   No disk found\n");
+    }
 }
 
 impl Disk for Ata {
@@ -98,33 +145,19 @@ impl Disk for Ata {
 }
 
 impl Ata {
-    pub fn new(base: u16, slave: bool) -> Option<Self> {
-        let disk = Ata {
+    pub fn new(base: u16, slave: bool) -> Self {
+        Ata {
             base: base,
             slave: slave,
-        };
-
-        // Make sure that disk exists
-        let identity = disk.identify();
-
-        // BUG: This initial read required on some emulators such as QEMU
-        let mut buffer = [0u8; 512];
-        disk.read(0x40, 1, &mut buffer);
-
-        if identity.is_none() {
-            None
-        } else {
-            Some(disk)
         }
     }
 
     /// IDENTIFY command
     ///
     /// Returns information about a drive if it exists.
-    pub fn identify(&self) -> Option<u8> {
+    pub fn identify(&self) -> Option<[u8; 512]> {
         let command = self.base + COMMAND;
         let selector = self.base + SELECTOR;
-        let data = self.base + DATA;
 
         // Select drive
         if self.slave {
@@ -133,10 +166,10 @@ impl Ata {
             outb(selector, 0xa0);
         }
 
-        outb(self.base + 2, 0);
-        outb(self.base + 3, 0);
-        outb(self.base + 4, 0);
-        outb(self.base + 5, 0);
+        outb(self.base + SECTOR_COUNT, 0);
+        outb(self.base + LBA_LOW, 0);
+        outb(self.base + LBA_MID, 0);
+        outb(self.base + LBA_HIGH, 0);
 
         // Send IDENTIFY command
         outb(command, 0xec);
@@ -152,63 +185,32 @@ impl Ata {
             }
 
             // Check if drive is ATA
-            if inb(0x1f4) != 0 {
-                return None;
-            }
-            if inb(0x1f5) != 0 {
+            if inb(self.base + LBA_MID) != 0 {
                 return None;
             }
 
-            // while (status & 0b00001111) == 0 {
-            //    status = inb(command);
-            // }
+            if inb(self.base + LBA_HIGH) != 0 {
+                return None;
+            }
+
+            while (status & 0b00001111) == 0 {
+                status = inb(command);
+            }
 
             // Check if ERR is set
             if (status & 0b00000111) != 0 {
                 return None;
             }
 
-            return Some(inb(data));
-        }
-    }
+            let mut buffer = [0u8; 512];
 
-    pub fn read28(&self, lba: u32, count: u8, buffer: *mut u16) {
-        let selector;
-        if self.slave {
-            selector = 0xf0;
-        } else {
-            selector = 0xe0;
-        }
-
-        outb(self.base + SELECTOR, selector | ((lba >> 24) & 0xf0) as u8);
-        outb(self.base + 1, 0);
-        outb(self.base + 2, count);
-        outb(self.base + 3, lba as u8);
-        outb(self.base + 4, (lba >> 8) as u8);
-        outb(self.base + 5, (lba >> 16) as u8);
-        // Send READ SECTORS command
-        outb(self.base + COMMAND, 0x20);
-
-        // Wait until BSY is cleared
-        for _ in 0..count {
-            let mut status = inb(self.base + COMMAND);
-            while (status & 0b10000000) != 0 {
-                status = inb(self.base + COMMAND);
-            }
-            while (status & 0b00001000) == 0 {
-                status = inb(self.base + COMMAND);
-            }
-
-            // Read sector
-            for i in 0..255 {
+            for i in 0..256 {
                 let data = inw(self.base + DATA);
-                unsafe {
-                    *buffer.offset(i) = data;
-                }
-                print!("{:0x}", unsafe { *buffer.offset(i) });
+                buffer[i * 2] = (data >> 8) as u8;
+                buffer[i * 2 + 1] = data as u8;
             }
 
-            print!(" : ");
+            Some(buffer)
         }
     }
 
@@ -220,15 +222,15 @@ impl Ata {
         let lba5 = ((lba & 0x00ff00000000) >> 32) as u8;
         let lba6 = ((lba & 0xff0000000000) >> 40) as u8;
 
-        outb(self.base + 2, (count & 0xff00) as u8);
-        outb(self.base + 3, lba4);
-        outb(self.base + 4, lba5);
-        outb(self.base + 5, lba6);
+        outb(self.base + SECTOR_COUNT, (count & 0xff00) as u8);
+        outb(self.base + LBA_LOW, lba4);
+        outb(self.base + LBA_MID, lba5);
+        outb(self.base + LBA_HIGH, lba6);
 
-        outb(self.base + 2, (count & 0x00ff) as u8);
-        outb(self.base + 3, lba1);
-        outb(self.base + 4, lba2);
-        outb(self.base + 5, lba3);
+        outb(self.base + SECTOR_COUNT, (count & 0x00ff) as u8);
+        outb(self.base + LBA_LOW, lba1);
+        outb(self.base + LBA_MID, lba2);
+        outb(self.base + LBA_HIGH, lba3);
     }
 
     fn delay_400ns(&self) {

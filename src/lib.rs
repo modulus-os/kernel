@@ -83,22 +83,18 @@ pub extern "C" fn kmain(mb_info_address: usize) {
     print!(" >> Initializing IDT\n");
     int::init();
 
-    env::time::init();
     // Initialize PIT
-    print!(" >> Initializing PIT\n");
+    print!(" >> Initializing PIT\n\n");
+    env::time::init();
+
+    // List disks
+    disk::ata::list();
+
+    // fs.find();
 
     terminal::TERM.lock().set_color(GREEN);
     print!("\nStartup time: {}ms\n", env::time::ms());
     terminal::TERM.lock().set_color(WHITE);
-
-    let disk = match disk::ata::Ata::new(0x1f0, false) {
-        Some(disk) => disk,
-        None => disk::ata::Ata::new(0x1f0, true).unwrap(),
-    };
-
-    let fs = fs::iso9660::Iso9660::new(disk);
-    print!("{}", fs.is_some());
-    // fs.find();
 
     loop {}
 }

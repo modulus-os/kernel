@@ -53,15 +53,3 @@ target_dir:
 clean:
 	rm -rf target
 	cargo fmt -- src/lib.rs --write-mode=overwrite
-
-doc-kernel:
-	cargo doc
-	rm -rf target/doc
-	rustdoc src/lib.rs --crate-name modulus -o /home/voxl/kernel/target/doc -L \
-	dependency=/home/voxl/kernel/target/debug -L dependency=/home/voxl/kernel/target/debug/deps \
-	--extern bitflags=/home/voxl/kernel/target/debug/deps/libbitflags-b378ff20d60f43f8.rlib \
-	--extern bitflags=/home/voxl/kernel/target/debug/deps/libbitflags-b378ff20d60f43f8.rlib \
-	--extern multiboot2=/home/voxl/kernel/target/debug/deps/libmultiboot2-2476d95169c1d115.rlib \
-	--extern multiboot2=/home/voxl/kernel/target/debug/deps/libmultiboot2-2476d95169c1d115.rlib \
-	--extern spin=/home/voxl/kernel/target/debug/deps/libspin-c74e99cb6d9a92cb.rlib \
-	--extern spin=/home/voxl/kernel/target/debug/deps/libspin-c74e99cb6d9a92cb.rlib

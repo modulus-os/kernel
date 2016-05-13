@@ -43,7 +43,7 @@ pub mod fs;
 pub mod panic;
 
 /// Version information
-pub const VERSION: &'static str = "0.1.8";
+pub const VERSION: &'static str = "0.1.9";
 
 /// Reexport x64 architecture components
 pub use x64::*;

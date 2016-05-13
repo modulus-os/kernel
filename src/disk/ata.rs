@@ -133,14 +133,6 @@ impl Disk for Ata {
             // Cache flush
             outb(self.base + COMMAND, 0xe7);
         }
-
-        let mut status = inb(self.base + COMMAND);
-        while (status & 0b10000000) != 0 {
-            status = inb(self.base + COMMAND);
-        }
-        while (status & 0b00001000) == 0 {
-            status = inb(self.base + COMMAND);
-        }
     }
 }
 

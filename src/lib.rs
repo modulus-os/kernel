@@ -90,8 +90,6 @@ pub extern "C" fn kmain(mb_info_address: usize) {
     // List disks
     disk::ata::list();
 
-    // fs.find();
-
     terminal::TERM.lock().set_color(GREEN);
     print!("\nStartup time: {}ms\n", env::time::ms());
     terminal::TERM.lock().set_color(WHITE);

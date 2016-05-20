@@ -7,9 +7,9 @@ dependencies:
     - eval `ssh-agent` && ssh-add /home/ubuntu/.ssh/id_circleci_github && cargo test
 test:
   override:
-    - make all
+    - ./waf configure build --no-iso
 deployment:
   doc:
     branch: master
     commands:
-      - sh deploy.sh
+      - sh scripts/deploy.sh

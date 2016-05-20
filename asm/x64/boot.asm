@@ -5,9 +5,13 @@
 ;;------------------------------------------------------------------------------------------------
 
 global start
-extern lm_start
 
 section .boot
+
+%include "mb_header.asm"
+%include "lm_start.asm"
+%include "int.asm"
+
 bits 32
 
 start:

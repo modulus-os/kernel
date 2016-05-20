@@ -1,3 +1,7 @@
+/// VFS and filesystem drivers
+///
+/// Virtual file system abstraction and filesystem drivers
+pub mod fs;
 /// ATA specific disk driver
 pub mod ata;
 

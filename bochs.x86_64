@@ -1,2 +1,2 @@
-ata0-master: type=disk, path="target/modulus.iso"
+ata0-master: type=disk, path="modulus.iso"
 boot: disk

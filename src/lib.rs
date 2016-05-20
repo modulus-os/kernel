@@ -35,10 +35,6 @@ pub mod env;
 ///
 /// Drivers for reading and writing from storage devices.
 pub mod disk;
-/// VFS and filesystem drivers
-///
-/// Virtual file system abstraction and filesystem drivers
-pub mod fs;
 /// Rust panic_fmt function
 pub mod panic;
 
@@ -88,7 +84,16 @@ pub extern "C" fn kmain(mb_info_address: usize) {
     env::time::init();
 
     // List disks
-    disk::ata::list();
+    // disk::ata::list();
+
+    let disk = disk::ata::Ata::new(0x1f0, false);
+
+    let iso9660 = disk::fs::iso9660::Iso9660::new(disk);
+
+    if let Some(fs) = iso9660 {
+        print!("ISO9660 filesystem detected\n");
+        fs.test();
+    }
 
     terminal::TERM.lock().set_color(GREEN);
     print!("\nStartup time: {}ms\n", env::time::ms());

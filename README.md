@@ -1,6 +1,6 @@
 # Modulus v0.1.9
 
-Modulus is a 64 bit operating system written in Rust which aims to be flexible and modular. It is currently in a very early stage of development.
+64 bit operating system written in Rust
 
 # Features
 
@@ -18,10 +18,6 @@ Pre-requisites:
 
 * Rust nightly
 * NASM
-
-
-rustup target add x86_64-unknown-linux-gnu
-
 
 Modulus uses Waf as its build system. To build for the first time, execute
 

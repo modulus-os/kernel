@@ -7,7 +7,5 @@ authors = ["Sam Harrison <epicpotatopro@gmail.com>"]
 crate-type = ["staticlib"]
 
 [dependencies]
-spin = "0.3"
-
-[dependencies.multiboot2]
-git = "https://github.com/phil-opp/multiboot2-elf64"
+spin = "0.10.0"
+multiboot2 = "0.22"

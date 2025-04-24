@@ -15,9 +15,10 @@ pub fn panic(file: &str, line: u32) {
 #[lang = "eh_personality"]
 extern "C" fn eh_personality() {}
 
+/*
 #[cfg(not(test))]
 #[lang = "panic_fmt"]
 extern "C" fn panic_fmt(file: &str, line: u32) -> ! {
     panic(file, line);
     loop {}
-}
+}*/

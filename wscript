@@ -5,7 +5,7 @@ def configure(cfg):
 	cfg.find_program("nasm", VAR="NASM")
 	cfg.find_program("cargo", VAR="CARGO")
 	cfg.find_program("ld", VAR="LD")
-	cfg.find_program("grub-mkrescue", VAR="GRUBR")
+	# cfg.find_program("grub-mkrescue", VAR="GRUBR")
 
 	cfg.env.TARGET = "x64"
 	cfg.env.TRIPLE = "x86_64-unknown-linux-gnu"
@@ -13,7 +13,7 @@ def configure(cfg):
 	cfg.env.NASM_FLAGS = "-f elf64 -i../asm/x64/"
 	cfg.env.ASM_MAIN = "../asm/x64/boot.asm"
 
-	cfg.env.CARGO_FLAGS = "--target x86_64-unknown-linux-gnu -- -Z no-landing-pads -C no-redzone"
+	cfg.env.CARGO_FLAGS = "--target x86_64-unknown-linux-gnu -- -C no-redzone" # -Z no-landing-pads
 
 	cfg.env.LD_FLAGS = "--nmagic --gc-section -T ../scripts/linker.ld"
 

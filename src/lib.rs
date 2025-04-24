@@ -1,5 +1,5 @@
 #![feature(lang_items)]
-#![feature(const_fn)]
+#![feature(naked_functions_rustic_abi)]
 #![feature(asm)]
 #![feature(naked_functions)]
 #![no_std]

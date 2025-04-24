@@ -1,71 +1,80 @@
-#[cfg_attr(rustfmt, rustfmt_skip)]
+#![feature(asm_experimental_arch)]
+use core::arch::asm;
+
+#[inline(always)]
 pub fn outb(port: u16, value: u8) {
-	unsafe{
-		asm!("outb %al, %dx"
-			:
-			: "{dx}"(port), "{al}"(value)
-			:
-			: "volatile");
-	}
+    unsafe {
+        asm!(
+            "out dx, al",
+            in("dx") port,
+            in("al") value,
+            options(nostack, nomem, preserves_flags),
+        );
+    }
 }
 
-#[cfg_attr(rustfmt, rustfmt_skip)]
+#[inline(always)]
 pub fn outw(port: u16, value: u16) {
-	unsafe{
-		asm!("outw %ax, %dx"
-			:
-			: "{dx}"(port), "{ax}"(value)
-			:
-			: "volatile");
-	}
+    unsafe {
+        asm!(
+            "out dx, ax",
+            in("dx") port,
+            in("ax") value,
+            options(nostack, nomem, preserves_flags),
+        );
+    }
 }
 
-#[cfg_attr(rustfmt, rustfmt_skip)]
+#[inline(always)]
 pub fn outl(port: u16, value: u32) {
-	unsafe{
-		asm!("outl %eax, %dx"
-			:
-			: "{dx}"(port), "{eax}"(value)
-			:
-			: "volatile");
-	}
+    unsafe {
+        asm!(
+            "out dx, eax",
+            in("dx") port,
+            in("eax") value,
+            options(nostack, nomem, preserves_flags),
+        );
+    }
 }
 
-#[cfg_attr(rustfmt, rustfmt_skip)]
-pub fn inb(port: u16) -> u8{
-	unsafe{
-		let res: u8;
-		asm!("inb %dx, %al"
-			: "={al}"(res)
-			: "{dx}"(port)
-			:
-			: "volatile");
-		res
-	}
+#[inline(always)]
+pub fn inb(port: u16) -> u8 {
+    let value: u8;
+    unsafe {
+        asm!(
+            "in al, dx",
+            in("dx") port,
+            out("al") value,
+            options(nostack, nomem, preserves_flags),
+        );
+    }
+    value
 }
 
-#[cfg_attr(rustfmt, rustfmt_skip)]
-pub fn inw(port: u16) -> u16{
-	unsafe{
-		let res: u16;
-		asm!("inw %dx, %ax"
-			: "={ax}"(res)
-			: "{dx}"(port)
-			:
-			: "volatile");
-		res
-	}
+#[inline(always)]
+pub fn inw(port: u16) -> u16 {
+    let value: u16;
+    unsafe {
+        asm!(
+            "in ax, dx",
+            in("dx") port,
+            out("ax") value,
+            options(nostack, nomem, preserves_flags),
+        );
+    }
+    value
 }
 
-#[cfg_attr(rustfmt, rustfmt_skip)]
-pub fn inl(port: u16) -> u32{
-	unsafe{
-		let res: u32;
-		asm!("inl %dx, %eax"
-			: "={eax}"(res)
-			: "{dx}"(port)
-			:
-			: "volatile");
-		res
-	}
+#[inline(always)]
+pub fn inl(port: u16) -> u32 {
+    let value: u32;
+    unsafe {
+        asm!(
+            "in eax, dx",
+            in("dx") port,
+            out("eax") value,
+            options(nostack, nomem, preserves_flags),
+        );
+    }
+    value
 }

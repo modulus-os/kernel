@@ -1,3 +1,5 @@
+use core::arch::asm;
+
 /// Division By Zero; Interrupt 0
 pub fn de() {
     print!("Division By Zero\n");

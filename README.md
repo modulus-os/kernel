@@ -1,8 +1,6 @@
-![build](https://circleci.com/gh/modulus-os/kernel.svg?style=shield&circle-token=:circle-token) ![Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-blue.svg)
-
 # Modulus v0.1.9
 
-Modulus is a 64 bit operating system written in Rust which aims to be flexible and modular. It is currently in a very early stage of development.
+64 bit operating system written in Rust
 
 # Features
 
@@ -15,6 +13,11 @@ Here is a list of currently implemented features:
 * Keyboard support
 
 # Building
+
+Pre-requisites:
+
+* Rust nightly
+* NASM
 
 Modulus uses Waf as its build system. To build for the first time, execute
 

@@ -5,7 +5,7 @@ def configure(cfg):
 	cfg.find_program("nasm", VAR="NASM")
 	cfg.find_program("cargo", VAR="CARGO")
 	cfg.find_program("ld", VAR="LD")
-	cfg.find_program("grub-mkrescue", VAR="GRUBR")
+	# cfg.find_program("grub-mkrescue", VAR="GRUBR")
 
 	cfg.env.TARGET = "x64"
 	cfg.env.TRIPLE = "x86_64-unknown-none"

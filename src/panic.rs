@@ -7,4 +7,4 @@ fn panic_handler(_info: &core::panic::PanicInfo) -> ! {
     print!("\n    !PANIC!    \n");
     terminal::TERM.lock().set_color(WHITE);
     loop {}
-}
+}*/

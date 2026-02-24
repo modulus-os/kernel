@@ -12,10 +12,8 @@ impl<T: Disk> Iso9660<T> {
         let mut buffer = [0u8; 2048];
         disk.read(0x40, 1, &mut buffer);
 
-        let id = unsafe { *(&buffer as *const u8 as *const u64) } & 0xffffffffff00;
-
-        // Check for 'CD001' identifier
-        if id == 0x313030444300 {
+        // Check for 'CD001' identifier at bytes 1..6
+        if &buffer[1..6] == b"CD001" {
             return Some(Iso9660 {
                 disk: disk,
                 pvd: buffer,

@@ -63,7 +63,7 @@ pub extern "C" fn kmain(mb_info_address: usize) {
     int::pic::remap(0x20, 0x28);
     // Temporarily mask PICs
     io::pio::outb(0x21, 0xfc);
-    io::pio::outb(0x2a, 0xff);
+    io::pio::outb(0xa1, 0xff);
 
     // Initialize IDT
     print!(" >> Initializing IDT\n");

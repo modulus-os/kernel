@@ -14,19 +14,28 @@ Here is a list of currently implemented features:
 
 # Building
 
-Pre-requisites:
+## macOS
 
-* Rust nightly
-* NASM
+Install dependencies via Homebrew:
 
-Modulus uses Waf as its build system. To build for the first time, execute
+```
+brew install nasm x86_64-elf-binutils i686-elf-grub xorriso qemu
+```
 
-`./waf configure build`
+You also need Rust nightly with the `x86_64-unknown-none` target:
 
-This will configure and build the project. After the initial configuration, you will just need to run `./waf build` after making changes.
+```
+rustup toolchain install nightly
+rustup target add x86_64-unknown-none
+```
 
-To run in QEMU, execute `./waf build -q`
+## Build & Run
 
-To run in Bochs, execute `./waf build -b`
+```
+make          # build the kernel ELF binary
+make iso      # build a GRUB-bootable ISO
+make run      # build and launch in QEMU
+make clean    # remove all build artifacts
+```
 
 ![Screenshot](https://raw.githubusercontent.com/modulus-os/kernel/master/screenshot.png)

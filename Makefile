@@ -1,3 +1,5 @@
+LD        := x86_64-elf-ld
+MKRESCUE  := i686-elf-grub-mkrescue
 TARGET    := x86_64-unknown-none
 KERNEL    := target/$(TARGET)/debug/libmodulus.a
 ASM_OBJ   := target/asm.o
@@ -16,7 +18,7 @@ $(ASM_OBJ): asm/x64/boot.asm $(wildcard asm/x64/*.inc)
 	nasm -f elf64 -iasm/x64/ $< -o $@
 
 $(BINARY): $(ASM_OBJ) $(KERNEL)
-	ld --nmagic --gc-sections -T scripts/linker.ld $^ -o $@
+	$(LD) --nmagic --gc-sections -T scripts/linker.ld $^ -o $@
 
 iso: $(ISO)
 
@@ -25,7 +27,7 @@ $(ISO): $(BINARY) scripts/grub.cfg $(wildcard fs/*)
 	cp scripts/grub.cfg $(ISO_DIR)/boot/grub/
 	cp $(BINARY) $(ISO_DIR)/boot/
 	cp -r fs/* $(ISO_DIR)/ 2>/dev/null || true
-	grub-mkrescue -o $@ $(ISO_DIR)
+	$(MKRESCUE) -o $@ $(ISO_DIR)
 
 run: $(ISO)
 	qemu-system-x86_64 -cdrom $(ISO)

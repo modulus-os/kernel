@@ -1,4 +1,4 @@
-use memory::PAGE_SIZE;
+use crate::memory::PAGE_SIZE;
 
 pub mod area;
 

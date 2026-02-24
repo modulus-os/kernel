@@ -2,12 +2,17 @@
 name = "modulus"
 version = "0.1.9"
 authors = ["Sam Harrison <epicpotatopro@gmail.com>"]
+edition = "2021"
 
 [lib]
 crate-type = ["staticlib"]
 
 [dependencies]
-spin = "0.3"
+spin = "0.9"
+multiboot2 = { version = "0.22", default-features = false }
 
-[dependencies.multiboot2]
-git = "https://github.com/phil-opp/multiboot2-elf64"
+[profile.dev]
+panic = "abort"
+
+[profile.release]
+panic = "abort"

@@ -1,4 +1,4 @@
-use io::pio::*;
+use crate::io::pio::*;
 
 const PIC_1C: u16 = 0x20;
 const PIC_2C: u16 = 0xa0;

@@ -1,14 +1,5 @@
-#![feature(lang_items)]
-#![feature(const_fn)]
-#![feature(asm)]
-#![feature(naked_functions)]
 #![no_std]
-
-/// Multiboot crate for retrieving boot information
-extern crate multiboot2;
-
-/// Spinlock crate
-extern crate spin;
+#![no_builtins]
 
 #[macro_use]
 /// Macros
@@ -35,17 +26,16 @@ pub mod env;
 ///
 /// Drivers for reading and writing from storage devices.
 pub mod disk;
-/// Rust panic_fmt function
+/// Rust panic handler
 pub mod panic;
 
 /// Version information
-pub const VERSION: &'static str = "0.1.9";
+pub const VERSION: &str = "0.1.9";
 
 /// Reexport x64 architecture components
 pub use x64::*;
 
-use io::display::*;
-use disk::Disk;
+use crate::io::display::*;
 
 /// Kernel main
 ///

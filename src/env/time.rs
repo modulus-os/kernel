@@ -1,4 +1,4 @@
-use io::pio::*;
+use crate::io::pio::*;
 use spin::Mutex;
 
 static CLOCK: Mutex<usize> = Mutex::new(0);

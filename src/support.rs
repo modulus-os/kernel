@@ -1,7 +1,4 @@
-#![allow(private_no_mangle_fns)]
 #![allow(dead_code)]
-
-#![no_builtins]
 
 #[no_mangle]
 pub unsafe extern "C" fn memcpy(dest: *mut u8, src: *const u8, n: usize) -> *mut u8 {

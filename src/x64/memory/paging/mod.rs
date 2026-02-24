@@ -1,6 +1,5 @@
-use memory::PAGE_SIZE;
-// use memory::frame::Frame;
-use memory::alloc::FrameAlloc;
+use crate::memory::PAGE_SIZE;
+use crate::memory::alloc::FrameAlloc;
 
 pub const PRESENT: u64 = 1 << 0;
 pub const WRITABLE: u64 = 1 << 1;

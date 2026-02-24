@@ -8,12 +8,10 @@ def configure(cfg):
 	# cfg.find_program("grub-mkrescue", VAR="GRUBR")
 
 	cfg.env.TARGET = "x64"
-	cfg.env.TRIPLE = "x86_64-unknown-linux-gnu"
+	cfg.env.TRIPLE = "x86_64-unknown-none"
 
 	cfg.env.NASM_FLAGS = "-f elf64 -i../asm/x64/"
 	cfg.env.ASM_MAIN = "../asm/x64/boot.asm"
-
-	cfg.env.CARGO_FLAGS = "--target x86_64-unknown-linux-gnu -- -C no-redzone" # -Z no-landing-pads
 
 	cfg.env.LD_FLAGS = "--nmagic --gc-section -T ../scripts/linker.ld"
 
@@ -24,9 +22,9 @@ def options(opt):
 
 def build(bld):
 	# Rust
-	bld(rule="${CARGO} rustc ${CARGO_FLAGS}",
+	bld(rule="${CARGO} build --target x86_64-unknown-none",
 		source=bld.path.ant_glob("src/**"),
-		target="../target/x86_64-unknown-linux-gnu/debug/libmodulus.a", shell=True)
+		target="../target/x86_64-unknown-none/debug/libmodulus.a", shell=True)
 
 	# Assembly
 	bld(rule="${NASM} ${NASM_FLAGS} ${ASM_MAIN} -o asm.o",
@@ -34,9 +32,9 @@ def build(bld):
 		target="asm.o")
 
 	# Link
-	bld(rule="${LD} ${LD_FLAGS} asm.o ../target/x86_64-unknown-linux-gnu/debug/libmodulus.a -o modulus",
+	bld(rule="${LD} ${LD_FLAGS} asm.o ../target/x86_64-unknown-none/debug/libmodulus.a -o modulus",
 		target="modulus",
-		source="../target/x86_64-unknown-linux-gnu/debug/libmodulus.a")
+		source="../target/x86_64-unknown-none/debug/libmodulus.a")
 
 	# ISO image
 	if (bld.options.build_iso):

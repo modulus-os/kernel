@@ -1,4 +1,4 @@
-use disk::Disk;
+use crate::disk::Disk;
 
 pub const PVD_DIR: usize = 156;
 
@@ -48,11 +48,11 @@ struct RecordIter<'a> {
     cur: usize,
     location: usize,
 	buffer: [u8; 512],
-	disk: &'a Disk,
+	disk: &'a dyn Disk,
 }
 
 impl<'a> RecordIter<'a> {
-    pub fn new(disk: &'a Disk, location: usize) -> Self {
+    pub fn new(disk: &'a dyn Disk, location: usize) -> Self {
 		let mut buffer = [0u8; 512];
 		disk.read(location as u64, 1, &mut buffer);
 

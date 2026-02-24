@@ -1,4 +1,4 @@
-use memory::alloc::*;
+use crate::memory::alloc::*;
 
 /// Represents a memory area
 pub struct Area {

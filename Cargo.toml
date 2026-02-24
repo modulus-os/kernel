@@ -2,10 +2,17 @@
 name = "modulus"
 version = "0.1.9"
 authors = ["Sam Harrison <epicpotatopro@gmail.com>"]
+edition = "2021"
 
 [lib]
 crate-type = ["staticlib"]
 
 [dependencies]
-spin = "0.10.0"
-multiboot2 = "0.22"
+spin = "0.9"
+multiboot2 = { version = "0.22", default-features = false }
+
+[profile.dev]
+panic = "abort"
+
+[profile.release]
+panic = "abort"

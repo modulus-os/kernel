@@ -1,4 +1,4 @@
-use io::pio::*;
+use crate::io::pio::*;
 
 /// Simple system reboot using 8042 keyboard controller
 pub fn reboot() {

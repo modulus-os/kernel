@@ -1,5 +1,5 @@
-use io::pio::*;
-use disk::Disk;
+use crate::io::pio::*;
+use crate::disk::Disk;
 
 const DATA: u16 = 0x0;
 const SECTOR_COUNT: u16 = 0x2;

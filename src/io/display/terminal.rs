@@ -1,7 +1,7 @@
 #![macro_use]
 
-use io::display;
-use io::pio::*;
+use crate::io::display;
+use crate::io::pio::*;
 use core::fmt;
 use spin::Mutex;
 
